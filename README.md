@@ -32,8 +32,8 @@ This repository is part of the data structure and algorithms (#EDA) teaching fra
 
 The students edit this section to add their names, Uniandes emails, and specify which project functionality of the project they will implement.
 
-1. **Req No 3**, Franklin Smith Fernandez Romero, <Ffernandezr@uniandes.edu.co>202215104.
-1. **Req No 5**, Manuel Santiago Prieto Hern谩ndez, <m.prietoh@uniandes.edu.co>,202226947.
+1. **Req No 3**, Franklin Smith Fernandez Romero, <F.fernandezr@uniandes.edu.co>202215104.
+1. **Req No 5**, Manuel Santiago Prieto Hernandez, <m.prietoh@uniandes.edu.co>,202226947.
 1. **Req No 4**, Pablo Arango Muriel, <p.arangomr@uniandes.edu.co>, 202220340.
 
 [Back to top](#challenge-template)
