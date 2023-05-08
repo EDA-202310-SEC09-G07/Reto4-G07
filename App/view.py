@@ -44,9 +44,13 @@ def new_controller():
     """
         Se crea una instancia del controlador
     """
-    #TODO: Llamar la función del controlador donde se crean las estructuras de datos
-    pass
+    #TODO OK: Llamar la función del controlador donde se crean las estructuras de datos
+    control = controller.new_controller()
+    return control
 
+# ----------------------------------------------
+#         Menus del sistema
+# ----------------------------------------------
 
 def print_menu():
     print("Bienvenido")
@@ -62,12 +66,56 @@ def print_menu():
     print("0- Salir")
 
 
-def load_data(control):
+def menu_cant_datos(op):
+    filename= None
+    match op:
+        case 1:
+            filename="siniestros/datos_siniestralidad-small.csv"
+        case 2:
+            filename="siniestros/datos_siniestralidad-5pct.csv"
+        case 3:
+            filename="siniestros/datos_siniestralidad-10pct.csv"
+        case 4:
+            filename="siniestros/datos_siniestralidad-20pct.csv"
+        case 5:
+            filename="siniestros/datos_siniestralidad-30pct.csv"
+        case 6:
+            filename="siniestros/datos_siniestralidad-50pct.csv"
+        case 7:
+            filename="siniestros/datos_siniestralidad-80pct.csv"
+        case 8:
+            filename="siniestros/datos_siniestralidad-large.csv"
+        case _:
+            print("Opción errónea en cantidad de datos, vuelva a elegir.\n")
+    return filename  
+  
+def print_menu_cant_datos()->int:
+    print("1- Datos 0.50%")
+    print("2- Datos 5%")
+    print("3- Datos 10%")
+    print("4- Datos 20%")
+    print("5- Datos 30%")
+    print("6- Datos 50%")
+    print("7- Datos 80%")
+    print("8- Datos 100%")
+    print("0- Salir")
+    op = int(input("Seleccione el tamaño de los datos que desea cargar: "))
+    return op
+
+
+# ----------------------------------------------
+#         Print de los requerimientos
+# ----------------------------------------------
+
+def load_data(control,filename):
     """
     Carga los datos
     """
     #TODO: Realizar la carga de datos
-    pass
+    control= controller.load_data(control, filename)
+    print_data(control, "load")
+    return control
+    
 
 
 def print_data(control, id):
@@ -157,7 +205,9 @@ if __name__ == "__main__":
         try:
             if int(inputs) == 1:
                 print("Cargando información de los archivos ....\n")
-                data = load_data(control)
+                op = print_menu_cant_datos()
+                filename = menu_cant_datos(op)
+                data = load_data(control, filename)
             elif int(inputs) == 2:
                 print_req_1(control)
 
