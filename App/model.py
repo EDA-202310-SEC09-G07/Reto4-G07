@@ -62,8 +62,38 @@ def new_data_structs():
     manera vacía para posteriormente almacenar la información.
     """
     #TODO: Inicializar las estructuras de datos
-    pass
+    control=None
+    control["data_wolfs"]= mp.newMap(3,
+                maptype='PROBING',
+                loadfactor=0.5,
+                cmpfunction=compare_map)
+    control["positions"]= gr.newGraph(datastructure= "ADJ_LIST",
+                                      directed= True,
+                                      size=14000,
+                                      cmpfunction=compareStopIds)
+    
+    
+#funcion temporal xd
+def compare_map(data_1, data_2):
+    data_2=me.getKey(data_2)
+    if data_1 > data_2:
+        return 1
+    elif data_1 < data_2:
+        return -1
+    else:
+        return 0
 
+def compareStopIds(stop, keyvaluestop):
+    """
+    Compara dos estaciones
+    """
+    stopcode = keyvaluestop['key']
+    if (stop == stopcode):
+        return 0
+    elif (stop > stopcode):
+        return 1
+    else:
+        return -1
 
 # Funciones para agregar informacion al modelo
 

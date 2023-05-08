@@ -35,8 +35,9 @@ def new_controller():
     """
     Crea una instancia del modelo
     """
-    #TODO: Llamar la función del modelo que crea las estructuras de datos
-    pass
+    #TODO OK: Llamar la función del modelo que crea las estructuras de datos
+    control =model.new_data_structs()
+    return control
 
 
 # Funciones para la carga de datos
