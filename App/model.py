@@ -64,12 +64,18 @@ def new_data_structs():
     #TODO: Inicializar las estructuras de datos
     control=None
     control["data_wolfs"]= mp.newMap(3,
-                maptype='PROBING',
-                loadfactor=0.5,
-                cmpfunction=compare_map)
-    control["positions"]= gr.newGraph(datastructure= "ADJ_LIST",
+                                        maptype='PROBING',
+                                        loadfactor=0.5,
+                                        cmpfunction=compare_map)
+    
+    control["positions"]= mp.newMap(3,
+                                    maptype='PROBING',
+                                    loadfactor=0.5,
+                                    cmpfunction=compare_map)
+    
+    control["graph"]= gr.newGraph(datastructure= "ADJ_LIST",
                                       directed= True,
-                                      size=14000,
+                                      size=300000,
                                       cmpfunction=compareStopIds)
     
     
