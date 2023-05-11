@@ -47,7 +47,27 @@ def load_data(control, filename):
     Carga los datos del reto
     """
     # TODO: Realizar la carga de datos
-    pass
+    start = get_time()
+    lista_eventos=model.new_list()
+    tracks , wolfs = filename
+    
+    file = cf.data_dir + wolfs
+    input_file = csv.DictReader(open(file, encoding='utf-8'))
+    for data1 in input_file:
+        control= model.add_wolfs(control, data1)
+    
+    
+    file = cf.data_dir + tracks
+    input_file_2 = csv.DictReader(open(file, encoding='utf-8'))
+    for data2 in input_file_2:
+        lista_eventos= model.add_list_evento(data2,lista_eventos)
+    lista_eventos = model.sort(lista_eventos)
+
+    
+    end= get_time()
+    deltatime = delta_time(start, end)
+    print(deltatime)
+    return control
 
 
 # Funciones de ordenamiento

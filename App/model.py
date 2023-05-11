@@ -55,6 +55,11 @@ dos listas, una para los videos, otra para las categorias de los mismos.
 
 # Construccion de modelos
 
+def new_list():
+    lista= lt.newList(datastructure="ARRAY_LIST")
+    return lista
+
+
 
 def new_data_structs():
     """
@@ -73,7 +78,7 @@ def new_data_structs():
                                     loadfactor=0.5,
                                     cmpfunction=compare_map)
     
-    control["graph"]= gr.newGraph(datastructure= "ADJ_LIST",
+    control["moves"]= gr.newGraph(datastructure= "ADJ_LIST",
                                       directed= True,
                                       size=300000,
                                       cmpfunction=compareStopIds)
@@ -113,14 +118,26 @@ def add_data(data_structs, data):
 
 # Funciones para creacion de datos
 
-def new_data(id, info):
-    """
-    Crea una nueva estructura para modelar los datos
-    """
-    #TODO: Crear la función para estructurar los datos
-    pass
+def add_wolfs(control, wolf):
+    mp.put(control["data_wolfs"] , wolf["animal-id"],wolf)
+    return control
 
 
+def add_graph(control, regis):
+    nodos= control["positions"]
+    tracks= control["moves"]
+    mp.put(control["positions"] , regis["individual-local-identifier"],regis)
+    
+    
+    gr.insertVertex(tracks, )
+    gr.addEdge(tracks,)
+    
+    return control
+
+def add_list_evento(data,lista_eventos):
+    lt.addLast(lista_eventos,data)
+    return lista_eventos
+    
 # Funciones de consulta
 
 def get_data(data_structs, id):
@@ -228,10 +245,28 @@ def sort_criteria(data_1, data_2):
     #TODO: Crear función comparadora para ordenar
     pass
 
+def sort_event(data1,data2):
+    if data1["tag-local-identifier"] < data2["tag-local-identifier"]:
+        return True
+    elif data1["tag-local-identifier"] == data2["tag-local-identifier"]:
+        if data1["individual-local-identifier"] < data2["individual-local-identifier"]:
+            return True
+        elif data1["individual-local-identifier"] == data2["individual-local-identifier"]:
+            if data1["timestamp"] < data2["timestamp"]:
+                return True
+            else:
+                False
+        else:
+            return False
+    else:
+        return False
+    
+    
 
 def sort(data_structs):
     """
     Función encargada de ordenar la lista con los datos
     """
     #TODO: Crear función de ordenamiento
-    pass
+    data_structs= merg.sort(data_structs, sort_event)
+    return data_structs
