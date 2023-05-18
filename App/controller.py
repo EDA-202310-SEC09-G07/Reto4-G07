@@ -49,20 +49,24 @@ def load_data(control, filename):
     # TODO: Realizar la carga de datos
     start = get_time()
     lista_eventos=model.new_list()
+    #carga los nombres de archivo y los asigna a 2 variables
     tracks , wolfs = filename
     
+    #itera sobre los datos de los lobos como individuos y se almacena en una tabla "mapa"
     file = cf.data_dir + wolfs
     input_file = csv.DictReader(open(file, encoding='utf-8'))
     for data1 in input_file:
         control= model.add_wolfs(control, data1)
     
-    
+    #itera sobre los registros de posicion de los lobos y los añade a una lista
     file = cf.data_dir + tracks
     input_file_2 = csv.DictReader(open(file, encoding='utf-8'))
     for data2 in input_file_2:
         lista_eventos= model.add_list_evento(data2,lista_eventos)
+    #se ordena la lista por manada, por lobo y por fecha
     lista_eventos = model.sort(lista_eventos)
 
+    model.load_moves(control,lista_eventos)
     
     end= get_time()
     deltatime = delta_time(start, end)
