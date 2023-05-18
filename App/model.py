@@ -108,12 +108,16 @@ def compareStopIds(stop, keyvaluestop):
 
 # Funciones para agregar informacion al modelo
 
-def add_data(data_structs, data):
+def load_moves(control,lista_eventos):
     """
     Función para agregar nuevos elementos a la lista
     """
     #TODO: Crear la función para agregar elementos a una lista
-    pass
+    #agregamos los nodos y los vertices
+    grafo= control["moves"]
+    for move in lt.iterator(lista_eventos):
+        lon, lat, id = move["location-long"], move["location-lat"], move["individual-local-identifier"]
+        gr.insertVertex(grafo,str())
 
 
 # Funciones para creacion de datos
@@ -246,18 +250,13 @@ def sort_criteria(data_1, data_2):
     pass
 
 def sort_event(data1,data2):
-    if data1["tag-local-identifier"] < data2["tag-local-identifier"]:
+    if data1["individual-local-identifier"] < data2["individual-local-identifier"]:
         return True
-    elif data1["tag-local-identifier"] == data2["tag-local-identifier"]:
-        if data1["individual-local-identifier"] < data2["individual-local-identifier"]:
+    elif data1["individual-local-identifier"] == data2["individual-local-identifier"]:
+        if data1["timestamp"] < data2["timestamp"]:
             return True
-        elif data1["individual-local-identifier"] == data2["individual-local-identifier"]:
-            if data1["timestamp"] < data2["timestamp"]:
-                return True
-            else:
-                False
         else:
-            return False
+            False
     else:
         return False
     
