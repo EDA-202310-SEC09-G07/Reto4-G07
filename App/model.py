@@ -46,6 +46,7 @@ from DISClib.Algorithms.Sorting import insertionsort as ins
 from DISClib.Algorithms.Sorting import selectionsort as se
 from DISClib.Algorithms.Sorting import mergesort as merg
 from DISClib.Algorithms.Sorting import quicksort as quk
+from math import radians, cos, sin, asin, sqrt
 assert cf
 
 """
@@ -67,12 +68,17 @@ def new_data_structs(control):
     manera vacía para posteriormente almacenar la información.
     """
     #TODO: Inicializar las estructuras de datos
-    control["data_wolfs"]= mp.newMap(3,
+    control["wolfs"]= mp.newMap(20,
                                         maptype='PROBING',
                                         loadfactor=0.5,
                                         cmpfunction=compare_map)
     
     control["positions"]= mp.newMap(3,
+                                    maptype='PROBING',
+                                    loadfactor=0.5,
+                                    cmpfunction=compare_map)
+    
+    control["encuentros"]= mp.newMap(20,
                                     maptype='PROBING',
                                     loadfactor=0.5,
                                     cmpfunction=compare_map)
@@ -114,27 +120,123 @@ def load_moves(control,lista_eventos):
     #TODO: Crear la función para agregar elementos a una lista
     #agregamos los nodos y los vertices
     grafo= control["moves"]
-    for move in lt.iterator(lista_eventos):
-        lon, lat, id = move["location-long"], move["location-lat"], move["individual-local-identifier"]
-        gr.insertVertex(grafo,str())
+    mapa= control["positions"]
+    first= lt.firstElement(lista_eventos)
+    individual_id=first["individual-local-identifier"]+"_"+first["tag-local-identifier"]
+    pos=1
+    lista_eventos2=lista_eventos
+    for evento in lt.iterator(lista_eventos2):
+        punto= crear_identificador(evento)
+        mp.put(mapa, punto, evento)
+        if pos== 1:
+            gr.insertVertex(grafo, punto)
+        elif individual_id== (evento["individual-local-identifier"]+"_"+evento["tag-local-identifier"]):
+            gr.insertVertex(grafo, punto)
+            evento_anterior= lt.getElement(lista_eventos, pos)
+            lat1= round(float(evento["location-lat"]), 3)
+            lon1=round(float(evento["location-long"]), 3)
+            lat2= round(float(evento_anterior["location-lat"]), 3)
+            lon2=round(float(evento_anterior["location-long"]), 3)
+            peso= haversine(lon1, lat1, lon2, lat2)
+            punto_2= crear_identificador(evento_anterior)
+            gr.addEdge(grafo, punto_2, punto, peso)
+            
+        else: 
+            individual_id=evento["individual-local-identifier"]+"_"+evento["tag-local-identifier"]
+            gr.insertVertex(grafo, punto)
+        
+        pos+=1
+            
+    
+    control["moves"]= grafo  
+    control["positions"] = mapa      
+
+    return control
+
+def agregar_encuentros(control, lista_eventos):
+    grafo= control["moves"]
+    mapa= control["encuentros"]
+    pos=1
+    first= lt.firstElement(lista_eventos)
+    lista_eventos2=lista_eventos
+    wolf=first["individual-local-identifier"]+"_"+first["tag-local-identifier"]
+    for evento in lt.iterator(lista_eventos2):
+        lat1= round(float(evento["location-lat"]), 3)
+        lon1=round(float(evento["location-long"]), 3)
+        if pos != lt.size(lista_eventos):
+            evento_siquiente= lt.getElement(lista_eventos, pos+1)
+            lat2= round(float(evento_siquiente["location-lat"]), 3)
+            lon2=round(float(evento_siquiente["location-long"]), 3)
+            if lon1 == lon2 and lat1== lat2:
+                if wolf != evento["individual-local-identifier"]+"_"+evento["tag-local-identifier"]:
+                    wolf=evento["individual-local-identifier"]+"_"+evento["tag-local-identifier"]
+                    tag_lat= str(lat1)
+                    tag_lat= tag_lat.replace("-", "m")
+                    tag_lat= tag_lat.replace(".", "p")
+                    tag_lon= str(lon1)
+                    tag_lon= tag_lon.replace("-", "m")
+                    tag_lon= tag_lon.replace(".", "p")
+                    tag_ver= tag_lon+"_"+tag_lat
+                    punto1= crear_identificador(evento)
+                    punto2= crear_identificador(evento_siquiente)
+                    if gr.containsVertex(grafo, tag_ver):
+                        gr.addEdge(grafo, tag_ver, punto2, 0.000)
+                        gr.addEdge(grafo, punto2, tag_ver, 0.000)
+                    else:
+                        valor= lon1, lat1
+                        mp.put(mapa, tag_ver, valor)
+                        gr.insertVertex(grafo, tag_ver)
+                        gr.addEdge(grafo, tag_ver, punto1, 0.000)
+                        gr.addEdge(grafo, punto1, tag_ver, 0.000)
+                        gr.addEdge(grafo, tag_ver, punto2, 0.000)
+                        gr.addEdge(grafo, punto2, tag_ver, 0.000)
+                    
+        pos+=1
+    
+    control["moves"]= grafo
+    control["encuentros"]= mapa
+    
+    return control     
+        
+    
 
 
 # Funciones para creacion de datos
+def haversine(lon1, lat1, lon2, lat2):
+    lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
 
+    dlon = lon2 - lon1 
+    dlat = lat2 - lat1 
+    a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
+    c = 2 * asin(sqrt(a)) 
+    r = 6371
+    return c * r
+
+def crear_identificador(data):
+    """ Crea el identificador id para agregar al grafo
+
+    Args:
+        data (dict): recibe el dato al cual se le va a crear el identificador 
+    """
+    lat= round(float(data["location-lat"]), 3)
+    lat= str(lat)
+    lat= lat.replace("-", "m")
+    lat= lat.replace(".", "p")
+    
+    lon=round(float(data["location-long"]), 3)
+    lon= str(lon)
+    lon= lon.replace("-", "m")
+    lon= lon.replace(".", "p")
+    
+    individual_id=data["individual-local-identifier"]+"_"+data["tag-local-identifier"]
+    
+    punto= lon+"_"+lat+"_"+individual_id
+    
+    return punto
+    
 def add_wolfs(control, wolf):
-    mp.put(control["data_wolfs"] , wolf["animal-id"],wolf)
-    return control
-
-
-def add_graph(control, regis):
-    nodos= control["positions"]
-    tracks= control["moves"]
-    mp.put(control["positions"] , regis["individual-local-identifier"],regis)
-    
-    
-    gr.insertVertex(tracks, )
-    gr.addEdge(tracks,)
-    
+    individual_id=wolf["animal-id"]+"_"+wolf["tag-id"]
+    mp.put(control["wolfs"] ,individual_id,wolf)
     return control
 
 def add_list_evento(data,lista_eventos):
@@ -156,7 +258,7 @@ def data_size(data_structs):
     Retorna el tamaño de la lista de datos
     """
     #TODO: Crear la función para obtener el tamaño de una lista
-    pass
+    return lt.size(data_structs)
 
 
 def req_1(data_structs):
@@ -252,19 +354,36 @@ def sort_event(data1,data2):
     if data1["individual-local-identifier"] < data2["individual-local-identifier"]:
         return True
     elif data1["individual-local-identifier"] == data2["individual-local-identifier"]:
-        if data1["timestamp"] < data2["timestamp"]:
+        if data1["tag-local-identifier"] < data2["tag-local-identifier"]:
             return True
+        elif data1["tag-local-identifier"] == data2["tag-local-identifier"]:
+            return data1["timestamp"] < data2["timestamp"]
         else:
             False
     else:
         return False
     
+def sort_lon_lat(data1,data2):
     
+    if round(float(data1["location-long"]), 3)< round(float(data2["location-long"]), 3):
+        return True
+    elif round(float(data1["location-long"]), 3)==round(float(data2["location-long"]), 3):
+        if round(float(data1["location-lat"]), 3) < round(float(data2["location-lat"]), 3):
+            return True
+        elif round(float(data1["location-lat"]), 3) == round(float(data2["location-lat"]), 3):
+            return data1["individual-local-identifier"] < data2["individual-local-identifier"]
+        else: 
+            return False
+    else: 
+        return False
 
-def sort(data_structs):
+def sort(data_structs, num):
     """
     Función encargada de ordenar la lista con los datos
     """
     #TODO: Crear función de ordenamiento
-    data_structs= merg.sort(data_structs, sort_event)
+    if num ==1:
+        data_structs= merg.sort(data_structs, sort_event)
+    elif num ==2:
+        data_structs= merg.sort(data_structs, sort_lon_lat)
     return data_structs

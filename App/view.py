@@ -112,8 +112,7 @@ def load_data(control,filename):
     Carga los datos
     """
     #TODO: Realizar la carga de datos
-    control= controller.load_data(control, filename)
-    print_data(control, "load")
+    control = controller.load_data(control, filename)
     return control
     
 

@@ -36,9 +36,10 @@ def new_controller():
     Crea una instancia del modelo
     """
     #TODO OK: Llamar la función del modelo que crea las estructuras de datos
-    control={"data_wolfs": None,
+    control={"wolfs": None,
             "positions": None, 
-            "moves": None}
+            "moves": None,
+            "encuentros": None}
     control =model.new_data_structs(control)
     return control
 
@@ -56,20 +57,22 @@ def load_data(control, filename):
     tracks , wolfs = filename
     
     #itera sobre los datos de los lobos como individuos y se almacena en una tabla "mapa"
-    file = cf.data_dir + wolfs
-    input_file = csv.DictReader(open(file, encoding='utf-8'))
+    file_1 = cf.data_dir + wolfs
+    input_file = csv.DictReader(open(file_1, encoding='utf-8'))
     for data1 in input_file:
         control= model.add_wolfs(control, data1)
     
     #itera sobre los registros de posicion de los lobos y los añade a una lista
-    file = cf.data_dir + tracks
-    input_file_2 = csv.DictReader(open(file, encoding='utf-8'))
+    file_2 = cf.data_dir + tracks
+    input_file_2 = csv.DictReader(open(file_2, encoding='utf-8'))
     for data2 in input_file_2:
         lista_eventos= model.add_list_evento(data2,lista_eventos)
     #se ordena la lista por manada, por lobo y por fecha
-    lista_eventos = model.sort(lista_eventos)
+    lista_eventos = model.sort(lista_eventos, 1)
 
-    model.load_moves(control,lista_eventos)
+    control = model.load_moves(control,lista_eventos)
+    lista_eventos= model.sort(lista_eventos, 2)
+    control = model.agregar_encuentros(control, lista_eventos)
     
     end= get_time()
     deltatime = delta_time(start, end)
