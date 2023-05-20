@@ -36,7 +36,10 @@ def new_controller():
     Crea una instancia del modelo
     """
     #TODO OK: Llamar la función del modelo que crea las estructuras de datos
-    control =model.new_data_structs()
+    control={"data_wolfs": None,
+            "positions": None, 
+            "moves": None}
+    control =model.new_data_structs(control)
     return control
 
 

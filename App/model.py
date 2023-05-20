@@ -61,13 +61,12 @@ def new_list():
 
 
 
-def new_data_structs():
+def new_data_structs(control):
     """
     Inicializa las estructuras de datos del modelo. Las crea de
     manera vacía para posteriormente almacenar la información.
     """
     #TODO: Inicializar las estructuras de datos
-    control=None
     control["data_wolfs"]= mp.newMap(3,
                                         maptype='PROBING',
                                         loadfactor=0.5,
@@ -82,7 +81,7 @@ def new_data_structs():
                                       directed= True,
                                       size=300000,
                                       cmpfunction=compareStopIds)
-    
+    return control
     
 #funcion temporal xd
 def compare_map(data_1, data_2):
