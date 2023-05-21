@@ -78,7 +78,7 @@ def new_data_structs(control):
                                     loadfactor=0.5,
                                     cmpfunction=compare_map)
     
-    control["encuentros"]= mp.newMap(20,
+    control["encuentros"]= mp.newMap(66,
                                     maptype='PROBING',
                                     loadfactor=0.5,
                                     cmpfunction=compare_map)
@@ -131,22 +131,21 @@ def load_moves(control,lista_eventos):
         if pos!= 1:
             anterior = lt.getElement(lista_eventos, pos-1)
             if individual_id == anterior["individual-local-identifier"]+"_"+anterior["tag-local-identifier"]:
-                punto_ant= crear_identificador(anterior)
-                if gr.getEdge(grafo, punto_ant, punto)== None:
-                    lon1= round(float(anterior["location-long"]), 3)
-                    lat1= round(float(anterior["location-long"]), 3)
-                    lon2= round(float(evento["location-long"]), 3)
-                    lat2= round(float(evento["location-long"]), 3)
+                
+                lon1= round(float(anterior["location-long"]), 3)
+                lat1= round(float(anterior["location-long"]), 3)
+                lon2= round(float(evento["location-long"]), 3)
+                lat2= round(float(evento["location-long"]), 3)
+                if anterior != evento:                    
+                    punto_ant= crear_identificador(anterior)
                     peso= haversine(lon1, lat1, lon2, lat2)
                     gr.addEdge(grafo, punto_ant, punto, peso)
         pos+=1   
             
-    print(gr.numVertices(grafo))
-    print(gr.numEdges(grafo))
     control["moves"]= grafo
     control["positions"] = mapa      
 
-    return control
+    return control, gr.numVertices(grafo), gr.numEdges(grafo)
 
     
             
@@ -160,17 +159,21 @@ def agregar_encuentros(control):
     lista= sort(lista, 2)
     lista_2= lista
     pos=1
+    encuentro_con=""
     for punto in lt.iterator(lista_2):
         if pos != lt.size(lista):
             siguiente= lt.getElement(lista, pos+1)
             iden1, lon1, lat1= obtener_identificador_lon_lat(punto)
             iden2, lon2, lat2= obtener_identificador_lon_lat(siguiente)
+            if pos==1:
+                encuentro_con= lon1+"_"+lat1
             if lat2== lat1 and lon2== lon1:
                 encuentro= lon1+"_"+lat1
-                if gr.containsVertex(grafo, encuentro):
+                if encuentro_con== encuentro:
                     gr.addEdge(grafo, encuentro, siguiente, 0)
                     gr.addEdge(grafo, siguiente, encuentro, 0)
                 else:
+                    encuentro_con= encuentro
                     mp.put(mapa, encuentro, encuentro)
                     gr.insertVertex(grafo, encuentro)
                     gr.addEdge(grafo, encuentro, punto, 0)
@@ -179,12 +182,10 @@ def agregar_encuentros(control):
                     gr.addEdge(grafo, siguiente, encuentro, 0)
         pos+=1    
     
-    print(mp.size(mapa))
     control["moves"]= grafo
     control["positions"] = mapa 
     
     return control
-        
     
 
 
