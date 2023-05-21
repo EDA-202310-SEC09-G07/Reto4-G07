@@ -131,14 +131,12 @@ def load_moves(control,lista_eventos):
         if pos!= 1:
             anterior = lt.getElement(lista_eventos, pos-1)
             if individual_id == anterior["individual-local-identifier"]+"_"+anterior["tag-local-identifier"]:
-                
-                lon1= round(float(anterior["location-long"]), 3)
-                lat1= round(float(anterior["location-long"]), 3)
-                lon2= round(float(evento["location-long"]), 3)
-                lat2= round(float(evento["location-long"]), 3)
-                if anterior != evento:
-                    
-                    punto_ant= crear_identificador(anterior)
+                punto_ant= crear_identificador(anterior)
+                if gr.getEdge(grafo, punto_ant, punto)== None:
+                    lon1= round(float(anterior["location-long"]), 3)
+                    lat1= round(float(anterior["location-long"]), 3)
+                    lon2= round(float(evento["location-long"]), 3)
+                    lat2= round(float(evento["location-long"]), 3)
                     peso= haversine(lon1, lat1, lon2, lat2)
                     gr.addEdge(grafo, punto_ant, punto, peso)
         pos+=1   
@@ -184,6 +182,8 @@ def agregar_encuentros(control):
     print(mp.size(mapa))
     control["moves"]= grafo
     control["positions"] = mapa 
+    
+    return control
         
     
 
