@@ -71,8 +71,9 @@ def load_data(control, filename):
     lista_eventos = model.sort(lista_eventos, 1)
 
     control = model.load_moves(control,lista_eventos)
-    lista_eventos= model.sort(lista_eventos, 2)
-    control = model.agregar_encuentros(control, lista_eventos)
+    
+    
+    control = model.agregar_encuentros(control)
     
     end= get_time()
     deltatime = delta_time(start, end)
