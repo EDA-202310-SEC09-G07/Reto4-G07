@@ -29,7 +29,7 @@ from DISClib.ADT import queue as qu
 from DISClib.ADT import map as mp
 from DISClib.DataStructures import mapentry as me
 assert cf
-from tabulate import tabulate
+import tabulate
 import traceback
 
 """
@@ -112,9 +112,60 @@ def load_data(control,filename):
     Carga los datos
     """
     #TODO: Realizar la carga de datos
-    control = controller.load_data(control, filename)
+    control, num_event, vertices_in, arcos_in, vertices, arcos, lista_lat, lista_lon, queue = controller.load_data(control, filename)
+    print("\n")
+    print("******Lobos y características del evento******")
+    print("Número de lobos: "+ str(mp.size(control["wolfs"])))
+    print("Número de lobos con datos: "+ str(mp.size(control["wolfs"])))
+    print("Número de eventos: "+ str(num_event))
+    print("\n")
+    print("******Características de los nodos******")
+    print("Puntos de encuentro: "+ str(mp.size(control["encuentros"])))
+    print("Puntos de seguimiento: "+ str(vertices_in))
+    print("Total: "+ str(vertices))
+    print("\n")
+    print("******Características de los arcos******")
+    print("Arcos puntos de encuentro: "+ str(arcos-arcos_in))
+    print("Arcos puntos de seguimiento: "+ str(arcos_in))
+    print("Total: "+ str(arcos))
+    print("\n")
+    print("******Área del grafo******")
+    first= lt.firstElement(lista_lat)
+    last= lt.lastElement(lista_lat)
+    minimo= str(round(float(first["location-lat"]), 3))
+    maximo= str(round(float(last["location-lat"]), 3))
+    
+    print("Min y max latitudes: "+minimo+", "+maximo)
+    first= lt.firstElement(lista_lon)
+    last= lt.lastElement(lista_lon)
+    minimo= str(round(float(first["location-long"]), 3))
+    maximo= str(round(float(last["location-long"]), 3))
+    print("Min y max longitudes: "+maximo+", "+minimo)
+    
+    lista= crear_lista_carga(queue)
+    header = lista[0].keys()
+    rows =  [x.values() for x in lista]
+    print(tabulate.tabulate(rows,header,tablefmt="grid",maxcolwidths= 10,maxheadercolwidths=6))
+    
     return control
     
+def crear_lista_carga(queue):
+    lista=[]
+    for i in range(qu.size(queue)):
+        data= qu.dequeue(queue)
+        data= data.split(";")
+        dicc={
+         "location-log aprox": data[0],
+         "location-lat aprox": data[1], 
+         "node-id": data[2],
+         "individual-id": data[3],
+         "adjent-nodes": data[4]   
+        }
+        
+        lista.append(dicc)
+    
+    return lista
+        
 
 
 def print_data(control, id):

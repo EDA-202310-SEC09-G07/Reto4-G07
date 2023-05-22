@@ -69,16 +69,34 @@ def load_data(control, filename):
         lista_eventos= model.add_list_evento(data2,lista_eventos)
     #se ordena la lista por manada, por lobo y por fecha
     lista_eventos = model.sort(lista_eventos, 1)
+    num_event= model.data_size(lista_eventos)
 
-    control = model.load_moves(control,lista_eventos)
+
+    control, vertices_in, arcos_in= model.load_moves(control,lista_eventos)
     
     
-    control = model.agregar_encuentros(control)
+    
+    control, vertices, arcos = model.agregar_encuentros(control)
+    
+    lista_eventos= model.sort(lista_eventos, 3)
+    lista_lat= model.prim_ult(lista_eventos)
+    
+    lista_eventos= model.sort(lista_eventos, 4)
+    lista_lon= model.prim_ult(lista_eventos)
+    
+    
+    lista_vertices= model.obtener_lista_vertices(control["moves"])
+    lista_vertices= model.cinco_prim_ult(lista_vertices)
+    queue= model.cola_carga_de_datos(control, lista_vertices)
+    
+    
+    
+    
     
     end= get_time()
     deltatime = delta_time(start, end)
     print(deltatime)
-    return control
+    return control, num_event, vertices_in, arcos_in, vertices, arcos, lista_lat, lista_lon, queue
 
 
 # Funciones de ordenamiento
