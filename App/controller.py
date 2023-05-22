@@ -86,7 +86,9 @@ def load_data(control, filename):
     
     
     lista_vertices= model.obtener_lista_vertices(control["moves"])
+    lista_vertices= model.sort(lista_vertices, 2)
     lista_vertices= model.cinco_prim_ult(lista_vertices)
+    
     queue= model.cola_carga_de_datos(control, lista_vertices)
     
     

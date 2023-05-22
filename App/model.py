@@ -243,7 +243,7 @@ def obtener_identificador_lon_lat(txt):
     elif len(txt)== 4:
         valor= txt[2]+"_"+txt[3]
     else:
-        valor=None
+        valor=0
         
     return valor, txt[0], txt[1]
 
@@ -340,7 +340,7 @@ def cola_carga_de_datos(control, data_structs):
         
         node_id= data
         individual_id= ""
-        if iden== None:
+        if iden== 0:
             lista= gr.adjacents(grafo, data)
             for data in lista:
                 individual_id= individual_id+","+ data
@@ -473,7 +473,25 @@ def sort_event(data1,data2):
         return False
     
 def sort_lon_lat(data1,data2):
-    
+    iden1, lon1, lat1= obtener_identificador_lon_lat(data1)
+    iden2, lon2, lat2= obtener_identificador_lon_lat(data2)
+    lon1, lat1= convertir_lon_lat(lon1, lat1)
+    lon2, lat2= convertir_lon_lat(lon2, lat2)
+    if int(lon1)< int(lon2):
+        return True
+    elif int(lon1)== int(lon2):
+        if int(lat1)< int(lat2):
+            return True
+        elif int(lat1)== int(lat2):
+            if iden1== 0 or iden2== 0:
+                return True
+            else:
+                return iden1< iden2
+        else:
+            return False
+    else:
+        return False
+        
     return data1< data2
     
 def sort_longitud(data1,data2):
