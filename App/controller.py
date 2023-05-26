@@ -76,21 +76,20 @@ def load_data(control, filename):
     
     
     
-    control, vertices, arcos = model.agregar_encuentros(control)
-    
-    lista_eventos= model.sort(lista_eventos, 3)
-    lista_lat= model.prim_ult(lista_eventos)
-    
-    lista_eventos= model.sort(lista_eventos, 4)
-    lista_lon= model.prim_ult(lista_eventos)
+    control, vertices, arcos, lista_vertices = model.agregar_encuentros(control)
     
     
-    lista_vertices= model.obtener_lista_vertices(control["moves"])
-    lista_vertices= model.sort(lista_vertices, 2)
+    lista_lon= model.prim_ult(lista_vertices)
+    lista_lon= model.obtener_lon(lista_lon)
+    
+    lista_vertices= model.sort(lista_vertices, 3)
+    lista_lat= model.prim_ult(lista_vertices)
+    lista_lat= model.obtener_lat(lista_lat)
+    
+    
     lista_vertices= model.cinco_prim_ult(lista_vertices)
     
     queue= model.cola_carga_de_datos(control, lista_vertices)
-    
     
     
     

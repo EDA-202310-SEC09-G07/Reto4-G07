@@ -132,15 +132,13 @@ def load_data(control,filename):
     print("******Área del grafo******")
     first= lt.firstElement(lista_lat)
     last= lt.lastElement(lista_lat)
-    minimo= str(round(float(first["location-lat"]), 3))
-    maximo= str(round(float(last["location-lat"]), 3))
+
     
-    print("Min y max latitudes: "+minimo+", "+maximo)
+    print("Min y max latitudes: "+str(first)+", "+str(last))
     first= lt.firstElement(lista_lon)
     last= lt.lastElement(lista_lon)
-    minimo= str(round(float(first["location-long"]), 3))
-    maximo= str(round(float(last["location-long"]), 3))
-    print("Min y max longitudes: "+maximo+", "+minimo)
+    
+    print("Min y max longitudes: "+str(last)+", "+str(first))
     
     lista= crear_lista_carga(queue)
     header = lista[0].keys()

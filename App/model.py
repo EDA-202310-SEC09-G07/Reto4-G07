@@ -157,14 +157,16 @@ def load_moves(control,lista_eventos):
 def agregar_encuentros(control):
     grafo= control["moves"]
     mapa= control["encuentros"]
+    mapa_positions= control["positions"]
     
-    lista= gr.vertices(grafo)
+    lista= mp.keySet(mapa_positions)
     lista= sort(lista, 2)
+    lista2= lista
     pos=1
     encuentro_con=""
     anterior=None
 
-    for punto in lt.iterator(lista):
+    for punto in lt.iterator(lista2):
         
         if pos != 1:
             iden, lon1, lat1= obtener_identificador_lon_lat(anterior)
@@ -177,6 +179,7 @@ def agregar_encuentros(control):
                 else:
                     encuentro_con= encuentro
                     mp.put(mapa, encuentro, encuentro)
+                    mp.put(mapa_positions, encuentro, encuentro)
                     gr.insertVertex(grafo, encuentro)
                     gr.addEdge(grafo, encuentro, anterior, 0)
                     gr.addEdge(grafo, anterior, encuentro, 0)
@@ -190,10 +193,11 @@ def agregar_encuentros(control):
         anterior= punto     
         pos+=1    
     control["moves"]= grafo
-    control["positions"] = mapa 
+    control["positions"] = mapa_positions
+    control["encuentros"]= mapa
 
     
-    return control, gr.numVertices(grafo), gr.numEdges(grafo)
+    return control, gr.numVertices(grafo), gr.numEdges(grafo), lista
     
 
 
@@ -282,9 +286,9 @@ def data_size(data_structs):
     #TODO: Crear la función para obtener el tamaño de una lista
     return lt.size(data_structs)
 
-def obtener_lista_vertices(grafo):
-    
-    return gr.vertices(grafo)
+def obtener_lista_mapa(mapa):
+
+    return mp.keySet(mapa)
 
 def cinco_prim_ult(data_structs):    
     if lt.size(data_structs)<=6:
@@ -330,7 +334,22 @@ def prim_ult(data_structs):
         lt.addLast(data_structs2, ultimo)
         return data_structs2
     
-    
+def obtener_lat(data_structs):
+    data_structs2=lt.newList(datastructure="ARRAY_LIST")
+    for data in lt.iterator(data_structs):
+        iden, lon, lat= obtener_identificador_lon_lat(data)
+        lon, lat= convertir_lon_lat(lon, lat)
+        lt.addLast(data_structs2, lat)
+        
+    return data_structs2
+
+def obtener_lon(data_structs):
+    data_structs2=lt.newList(datastructure="ARRAY_LIST")
+    for data in lt.iterator(data_structs):
+        iden, lon, lat= obtener_identificador_lon_lat(data)
+        lon, lat= convertir_lon_lat(lon, lat)
+        lt.addLast(data_structs2, lon)
+    return data_structs2
 def cola_carga_de_datos(control, data_structs):
     queue= qu.newQueue()
     grafo=control["moves"]
@@ -458,8 +477,6 @@ def sort(data_structs, num):
         data_structs= merg.sort(data_structs, sort_lon_lat)        
     elif num == 3:
         data_structs= merg.sort(data_structs, sort_latitud)
-    elif num == 4:
-        data_structs= merg.sort(data_structs, sort_longitud)
     return data_structs
 
 
@@ -473,31 +490,14 @@ def sort_event(data1,data2):
         return False
     
 def sort_lon_lat(data1,data2):
-    iden1, lon1, lat1= obtener_identificador_lon_lat(data1)
-    iden2, lon2, lat2= obtener_identificador_lon_lat(data2)
-    lon1, lat1= convertir_lon_lat(lon1, lat1)
-    lon2, lat2= convertir_lon_lat(lon2, lat2)
-    if lon1< lon2:
-        return True
-    elif lon1== lon2:
-        if lat1< lat2:
-            return True
-        elif lat1== lat2:
-            if iden1== 0 or iden2== 0:
-                return True
-            else:
-                return iden1< iden2
-        else:
-            return False
-    else:
-        return False
         
     return data1< data2
-    
-def sort_longitud(data1,data2):
-    return data1["location-long"]<data2["location-long"]
+
+
     
 def sort_latitud(data1,data2):
-    return data1["location-lat"]<data2["location-lat"]
+    iden, lon1, lat1 = obtener_identificador_lon_lat(data1)
+    iden, lon2, lat2 = obtener_identificador_lon_lat(data2)
+    return lat1<lat2
 
 
