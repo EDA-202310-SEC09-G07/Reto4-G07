@@ -477,12 +477,12 @@ def sort_lon_lat(data1,data2):
     iden2, lon2, lat2= obtener_identificador_lon_lat(data2)
     lon1, lat1= convertir_lon_lat(lon1, lat1)
     lon2, lat2= convertir_lon_lat(lon2, lat2)
-    if int(lon1)< int(lon2):
+    if lon1< lon2:
         return True
-    elif int(lon1)== int(lon2):
-        if int(lat1)< int(lat2):
+    elif lon1== lon2:
+        if lat1< lat2:
             return True
-        elif int(lat1)== int(lat2):
+        elif lat1== lat2:
             if iden1== 0 or iden2== 0:
                 return True
             else:
