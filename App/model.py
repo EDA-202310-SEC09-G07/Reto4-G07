@@ -121,7 +121,7 @@ def load_moves(control, lista_eventos):
     mapa = control["positions"]
     grafo = control["moves"]
 
-    pos = 1
+
     anterior = None
 
     for evento in lt.iterator(lista_eventos):
@@ -132,18 +132,18 @@ def load_moves(control, lista_eventos):
         mp.put(mapa, punto, evento)
         
         if anterior is not None and individual_id == anterior["individual-local-identifier"] + "_" + anterior["tag-local-identifier"]:
-            lon1 = round(float(anterior["location-long"]), 3)
-            lat1 = round(float(anterior["location-lat"]), 3)
-            lon2 = round(float(evento["location-long"]), 3)
-            lat2 = round(float(evento["location-lat"]), 3)
             
             if anterior != evento:
+                lon1 = round(float(anterior["location-long"]), 3)
+                lat1 = round(float(anterior["location-lat"]), 3)
+                lon2 = round(float(evento["location-long"]), 3)
+                lat2 = round(float(evento["location-lat"]), 3)
                 punto_ant = crear_identificador(anterior)
                 peso = haversine(lon1, lat1, lon2, lat2)
                 gr.addEdge(grafo, punto_ant, punto, peso)
         
         anterior = evento
-        pos += 1
+
 
     control["positions"] = mapa
     control["moves"] = grafo
@@ -432,12 +432,41 @@ def crear_datos_req1(grafo, vertex):
     return lon, lat, vertex, individual_id, individual_count
            
 
-def req_2(data_structs):
+def req_2(data_structs, inc, fin):
     """
     Función que soluciona el requerimiento 2
     """
     # TODO: Realizar el requerimiento 2
-    pass
+    recorrido= bfs.BreadhtFisrtSearch(data_structs, inc)
+    puntos_en= 0
+    suma_arc=0
+    if bfs.hasPathTo(recorrido, fin):
+        path = bfs.pathTo(recorrido, fin)
+        size= st.size(path)
+        lista=lt.newList(datastructure="ARRAY_LIST")
+        while not st.isEmpty(path):
+            vertex = st.pop(path)
+            txt= vertex.split("_")
+            if len(txt)==2:
+                puntos_en+=1
+            data= crear_datos_req1(data_structs, vertex)
+            if st.size(path) != size-1:
+                if st.isEmpty(path):
+                    arco="Unknown"
+                    vertice= "Unknown"
+                    data= data, vertice, arco
+                else:
+                    anterior= lt.lastElement(lista)
+                    arco= gr.getEdge(data_structs, anterior[2], data[2])
+                    suma_arc+= float(arco["weight"])
+                    anterior= anterior, vertex, arco["weight"]
+                    lt.removeLast(lista)
+                    lt.addLast(lista, anterior)
+            lt.addLast(lista, data)
+        return lista, size, puntos_en, suma_arc
+            
+    else: 
+        return False
 
 
 def req_3(data_structs):

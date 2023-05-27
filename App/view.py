@@ -222,7 +222,25 @@ def print_req_2(control):
         Función que imprime la solución del Requerimiento 2 en consola
     """
     # TODO: Imprimir el resultado del requerimiento 2
-    pass
+    
+    inc= input("Ingrese el punto de encuentro de origen: ")
+    fin= input("Ingrese el punto de encuentro de destino: ")
+    valor= controller.req_2(control, inc, fin)
+    if valor!= False:
+        print(True)
+        print("")
+        lista, size, puntos_en, suma_arc= valor
+        print("Total de nodos en el arbol: " + str(size))
+        print("Total de puntos de encuentro en el arbol BFS: " + str(puntos_en))
+        print("Total de puntos de sequimiento en el arbol BFS: " + str(size- puntos_en))
+        print("Distancia total del recorrido: "+ str(round(suma_arc, 3))+ " km")
+        lista= crear_lista_req1(lista)
+        header = lista[0].keys()
+        rows =  [x.values() for x in lista]
+        print(tabulate.tabulate(rows,header,tablefmt="grid",maxcolwidths= 10,maxheadercolwidths=6))
+    else:
+        print(valor)
+
 
 
 def print_req_3(control):
