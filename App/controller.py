@@ -125,8 +125,13 @@ def req_1(control, inc, fin):
     Retorna el resultado del requerimiento 1
     """
     valor= model.req_1(control["moves"], inc, fin)
-    
-    return valor
+    if len(valor)> 1:
+        lista, size, puntos_en, suma_arc= valor
+        lista= model.cinco_prim_ult(lista)
+        valor= lista, size, puntos_en, suma_arc
+        return valor
+    else:
+        return False
 
 
 def req_2(control):

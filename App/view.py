@@ -180,8 +180,42 @@ def print_req_1(control):
     # TODO: Imprimir el resultado del requerimiento 1
     inc= input("Ingrese el punto de encuentro de origen: ")
     fin= input("Ingrese el punto de encuentro de destino: ")
+    print("Creando el árbol DFS...")
+    print("Esta "+ fin + " en el arbol DFS?: ")
     valor= controller.req_1(control, inc, fin)
 
+    if len(valor)> 1:
+        print(True)
+        print("")
+        lista, size, puntos_en, suma_arc= valor
+        print("Total de nodos en el arbol: " + str(size))
+        print("Total de puntos de encuentro en el arbol DFS: " + str(puntos_en))
+        print("Total de puntos de sequimiento en el arbol DFS: " + str(size- puntos_en))
+        print("Distancia total del recorrido: "+ str(round(suma_arc, 3))+ " km")
+        lista= crear_lista_req1(lista)
+        header = lista[0].keys()
+        rows =  [x.values() for x in lista]
+        print(tabulate.tabulate(rows,header,tablefmt="grid",maxcolwidths= 10,maxheadercolwidths=6))
+    else:
+        print(valor)
+
+def crear_lista_req1(data_structs):
+    lista=[]
+    for data in lt.iterator(data_structs):
+        valores= data[0]
+        dicc={
+         "location-log aprox": valores[0],
+         "location-lat aprox": valores[1], 
+         "node-id": valores[2],
+         "individual-id": valores[3],
+         "individual-count": valores[4],   
+         "edge-To": data[1],
+         "edge-distance-km": data[2]
+        }
+        
+        lista.append(dicc)
+    
+    return lista
 
 def print_req_2(control):
     """

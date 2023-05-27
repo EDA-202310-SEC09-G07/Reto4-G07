@@ -216,7 +216,7 @@ def haversine(lon1, lat1, lon2, lat2):
     a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
     c = 2 * asin(sqrt(a)) 
     r = 6371
-    return c * r
+    return round((c * r), 3)
 
 def crear_identificador(data):
     """ Crea el identificador id para agregar al grafo
@@ -383,18 +383,57 @@ def req_1(data_structs, inc, fin):
     Función que soluciona el requerimiento 1
     """
     # TODO: Realizar el requerimiento 1
-    if not gr.containsVertex(data_structs, inc):
-        inc= "Unknown"
-    if not gr.containsVertex(data_structs, inc):
-        fin= "Unknown"
-    ver_inc= dfs.DepthFirstSearch(data_structs, inc)
-    
-    ver_fin= dfs.DepthFirstSearch(data_structs, fin)
-    
-    print(ver_fin)
-    
-    return ver_inc
+    recorrido= dfs.DepthFirstSearch(data_structs, inc)
+    puntos_en= 0
+    suma_arc=0
+    if dfs.hasPathTo(recorrido, fin):
+        path = dfs.pathTo(recorrido, fin)
+        size= st.size(path)
+        lista=lt.newList(datastructure="ARRAY_LIST")
+        while not st.isEmpty(path):
+            vertex = st.pop(path)
+            txt= vertex.split("_")
+            if len(txt)==2:
+                puntos_en+=1
+            data= crear_datos_req1(data_structs, vertex)
+            if st.size(path) != size-1:
+                if st.isEmpty(path):
+                    arco="Unknown"
+                    vertice= "Unknown"
+                    data= data, vertice, arco
+                else:
+                    anterior= lt.lastElement(lista)
+                    arco= gr.getEdge(data_structs, anterior[2], data[2])
+                    suma_arc+= float(arco["weight"])
+                    anterior= anterior, vertex, arco["weight"]
+                    lt.removeLast(lista)
+                    lt.addLast(lista, anterior)
+            lt.addLast(lista, data)
+        return lista, size, puntos_en, suma_arc
+            
+    else: 
+        return False
 
+        
+def crear_datos_req1(grafo, vertex):
+    iden, lon, lat= obtener_identificador_lon_lat(vertex)
+    lon, lat= convertir_lon_lat(lon, lat)
+    individual_id= ""
+    if iden== 0:
+            lista= gr.adjacents(grafo, vertex)
+            
+            for data in lt.iterator(lista):
+                iden2, lon2, lon2 = obtener_identificador_lon_lat(data)
+                individual_id= individual_id+","+ iden2
+            individual_id= individual_id.strip(",")
+    else:
+        
+        individual_id= iden
+    individual_count= individual_id.split(",")
+    individual_count=len(individual_count)
+    
+    return lon, lat, vertex, individual_id, individual_count
+           
 
 def req_2(data_structs):
     """
