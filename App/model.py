@@ -350,6 +350,7 @@ def obtener_lon(data_structs):
         lon, lat= convertir_lon_lat(lon, lat)
         lt.addLast(data_structs2, lon)
     return data_structs2
+
 def cola_carga_de_datos(control, data_structs):
     queue= qu.newQueue()
     grafo=control["moves"]
@@ -377,12 +378,22 @@ def cola_carga_de_datos(control, data_structs):
     return queue
         
 
-def req_1(data_structs):
+def req_1(data_structs, inc, fin):
     """
     Función que soluciona el requerimiento 1
     """
     # TODO: Realizar el requerimiento 1
-    pass
+    if not gr.containsVertex(data_structs, inc):
+        inc= "Unknown"
+    if not gr.containsVertex(data_structs, inc):
+        fin= "Unknown"
+    ver_inc= dfs.DepthFirstSearch(data_structs, inc)
+    
+    ver_fin= dfs.DepthFirstSearch(data_structs, fin)
+    
+    print(ver_fin)
+    
+    return ver_inc
 
 
 def req_2(data_structs):

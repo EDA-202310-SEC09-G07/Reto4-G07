@@ -178,7 +178,9 @@ def print_req_1(control):
         Función que imprime la solución del Requerimiento 1 en consola
     """
     # TODO: Imprimir el resultado del requerimiento 1
-    pass
+    inc= input("Ingrese el punto de encuentro de origen: ")
+    fin= input("Ingrese el punto de encuentro de destino: ")
+    valor= controller.req_1(control, inc, fin)
 
 
 def print_req_2(control):
