@@ -114,91 +114,88 @@ def compareStopIds(stop, keyvaluestop):
 
 # Funciones para agregar informacion al modelo
 
-def load_moves(control,lista_eventos):
+def load_moves(control, lista_eventos):
     """
     Función para agregar nuevos elementos a la lista
     """
-    #TODO: Crear la función para agregar elementos a una lista
-    #agregamos los nodos y los vertices
-    mapa= control["positions"]
-    grafo= control["moves"]
+    mapa = control["positions"]
+    grafo = control["moves"]
 
-    pos=1
-    anterior=None
+    pos = 1
+    anterior = None
+
     for evento in lt.iterator(lista_eventos):
-        punto= crear_identificador(evento)
-        individual_id=evento["individual-local-identifier"]+"_"+evento["tag-local-identifier"]
+        punto = crear_identificador(evento)
+        individual_id = evento["individual-local-identifier"] + "_" + evento["tag-local-identifier"]
+        
         gr.insertVertex(grafo, punto)
         mp.put(mapa, punto, evento)
-        if pos!= 1:
-            if individual_id == anterior["individual-local-identifier"]+"_"+anterior["tag-local-identifier"]:
-                
-                lon1= round(float(anterior["location-long"]), 3)
-                lat1= round(float(anterior["location-long"]), 3)
-                lon2= round(float(evento["location-long"]), 3)
-                lat2= round(float(evento["location-long"]), 3)
-                if anterior != evento:                    
-                    punto_ant= crear_identificador(anterior)
-                    peso= haversine(lon1, lat1, lon2, lat2)
-                    gr.addEdge(grafo, punto_ant, punto, peso)
-        anterior= evento
-        pos+=1   
+        
+        if anterior is not None and individual_id == anterior["individual-local-identifier"] + "_" + anterior["tag-local-identifier"]:
+            lon1 = round(float(anterior["location-long"]), 3)
+            lat1 = round(float(anterior["location-lat"]), 3)
+            lon2 = round(float(evento["location-long"]), 3)
+            lat2 = round(float(evento["location-lat"]), 3)
             
+            if anterior != evento:
+                punto_ant = crear_identificador(anterior)
+                peso = haversine(lon1, lat1, lon2, lat2)
+                gr.addEdge(grafo, punto_ant, punto, peso)
+        
+        anterior = evento
+        pos += 1
 
-    control["positions"] = mapa  
-    control["moves"]= grafo    
+    control["positions"] = mapa
+    control["moves"] = grafo
 
     return control, gr.numVertices(grafo), gr.numEdges(grafo)
+
 
     
             
         
 
 def agregar_encuentros(control):
-    grafo= control["moves"]
-    mapa= control["encuentros"]
-    mapa_positions= control["positions"]
+    grafo = control["moves"]
+    mapa = control["encuentros"]
+    mapa_positions = control["positions"]
     
-    lista= mp.keySet(mapa_positions)
-    lista= sort(lista, 2)
-    lista2= lista
-    pos=1
-    encuentro_con=""
-    anterior=None
+    lista = mp.keySet(mapa_positions)
+    lista = sort(lista, 2)
+    anterior = None
 
-    for punto in lt.iterator(lista2):
-        
-        if pos != 1:
-            iden, lon1, lat1= obtener_identificador_lon_lat(anterior)
-            iden, lon2, lat2= obtener_identificador_lon_lat(punto)
-            if lat2== lat1 and lon2== lon1:
-                encuentro= lon1+"_"+lat1
-                if encuentro_con== encuentro:
+    for punto in lt.iterator(lista):
+        if anterior is not None:
+            iden1, lon1, lat1 = obtener_identificador_lon_lat(anterior)
+            iden2, lon2, lat2 = obtener_identificador_lon_lat(punto)
+            if (lon2, lat2) == (lon1, lat1):
+                encuentro = f"{lon1}_{lat1}"
+                if mp.contains(mapa, encuentro):
                     gr.addEdge(grafo, encuentro, punto, 0)
                     gr.addEdge(grafo, punto, encuentro, 0)
                 else:
-                    encuentro_con= encuentro
-                    mp.put(mapa, encuentro, encuentro)
-                    mp.put(mapa_positions, encuentro, encuentro)
+                    mp.put(mapa,encuentro, encuentro)
+                    mp.put(mapa_positions,encuentro, encuentro)
                     gr.insertVertex(grafo, encuentro)
                     gr.addEdge(grafo, encuentro, anterior, 0)
                     gr.addEdge(grafo, anterior, encuentro, 0)
                     gr.addEdge(grafo, encuentro, punto, 0)
                     gr.addEdge(grafo, punto, encuentro, 0)
-        
-        else:
-            iden, lon2, lat2= obtener_identificador_lon_lat(punto)
-            encuentro_con= lon2+"_"+lat2
-        
-        anterior= punto     
-        pos+=1    
-    control["moves"]= grafo
-    control["positions"] = mapa_positions
-    control["encuentros"]= mapa
+            else:
+                encuentro = f"{lon2}_{lat2}"
 
+
+        else:
+            iden, lon2, lat2 = obtener_identificador_lon_lat(punto)
+        
+        anterior = punto
+
+    control["moves"] = grafo
+    control["positions"] = mapa_positions
+    control["encuentros"] = mapa
     
     return control, gr.numVertices(grafo), gr.numEdges(grafo), lista
-    
+
 
 
     
