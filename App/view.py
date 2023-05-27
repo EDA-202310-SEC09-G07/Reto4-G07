@@ -184,7 +184,7 @@ def print_req_1(control):
     print("Esta "+ fin + " en el arbol DFS?: ")
     valor= controller.req_1(control, inc, fin)
 
-    if len(valor)> 1:
+    if valor!= False:
         print(True)
         print("")
         lista, size, puntos_en, suma_arc= valor
