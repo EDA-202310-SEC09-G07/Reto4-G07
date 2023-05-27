@@ -72,8 +72,7 @@ def load_data(control, filename):
     num_event= model.data_size(lista_eventos)
 
 
-    control, vertices_in= model.vertices_moves(control,lista_eventos)
-    control, arcos_in= model.arcos_moves(control)
+    control, vertices_in, arcos_in= model.load_moves(control,lista_eventos)
     
     
     
