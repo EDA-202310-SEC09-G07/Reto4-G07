@@ -114,7 +114,7 @@ def compareStopIds(stop, keyvaluestop):
 
 # Funciones para agregar informacion al modelo
 
-def load_moves(control,lista_eventos):
+def vertices_moves(control,lista_eventos):
     """
     Función para agregar nuevos elementos a la lista
     """
@@ -127,28 +127,42 @@ def load_moves(control,lista_eventos):
     anterior=None
     for evento in lt.iterator(lista_eventos):
         punto= crear_identificador(evento)
-        individual_id=evento["individual-local-identifier"]+"_"+evento["tag-local-identifier"]
         gr.insertVertex(grafo, punto)
         mp.put(mapa, punto, evento)
-        if pos!= 1:
-            if individual_id == anterior["individual-local-identifier"]+"_"+anterior["tag-local-identifier"]:
-                
-                lon1= round(float(anterior["location-long"]), 3)
-                lat1= round(float(anterior["location-long"]), 3)
-                lon2= round(float(evento["location-long"]), 3)
-                lat2= round(float(evento["location-long"]), 3)
-                if anterior != evento:                    
-                    punto_ant= crear_identificador(anterior)
-                    peso= haversine(lon1, lat1, lon2, lat2)
-                    gr.addEdge(grafo, punto_ant, punto, peso)
-        anterior= evento
-        pos+=1   
             
 
     control["positions"] = mapa  
     control["moves"]= grafo    
 
-    return control, gr.numVertices(grafo), gr.numEdges(grafo)
+    return control, gr.numVertices(grafo)
+
+def arcos_moves(control):
+    mapa= control["positions"]
+    grafo= control["moves"]
+    lista= mp.valueSet(mapa)
+    lista= sort(lista, 1)
+    first= lt.firstElement(lista)
+    anterior=""
+    for data in lt.iterator(lista):
+        punto= crear_identificador(data)
+        individual_id=data["individual-local-identifier"]+"_"+data["tag-local-identifier"]
+        if data != first:
+            lon1= round(float(anterior["location-long"]), 3)
+            lat1= round(float(anterior["location-long"]), 3)
+            lon2= round(float(data["location-long"]), 3)
+            lat2= round(float(data["location-long"]), 3)
+            if anterior != data:                    
+                punto_ant= crear_identificador(anterior)
+                peso= haversine(lon1, lat1, lon2, lat2)
+                gr.addEdge(grafo, punto_ant, punto, peso)
+            
+        
+        anterior= data
+    
+    control["positions"] = mapa  
+    control["moves"]= grafo
+    
+    return control, gr.numEdges(grafo)
 
     
             
