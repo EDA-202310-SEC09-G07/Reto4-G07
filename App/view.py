@@ -180,15 +180,67 @@ def print_req_1(control):
     # TODO: Imprimir el resultado del requerimiento 1
     inc= input("Ingrese el punto de encuentro de origen: ")
     fin= input("Ingrese el punto de encuentro de destino: ")
+    print("Creando el árbol DFS...")
+    print("Esta "+ fin + " en el arbol DFS?: ")
     valor= controller.req_1(control, inc, fin)
 
+    if valor!= False:
+        print(True)
+        print("")
+        lista, size, puntos_en, suma_arc= valor
+        print("Total de nodos en el arbol: " + str(size))
+        print("Total de puntos de encuentro en el arbol DFS: " + str(puntos_en))
+        print("Total de puntos de sequimiento en el arbol DFS: " + str(size- puntos_en))
+        print("Distancia total del recorrido: "+ str(round(suma_arc, 3))+ " km")
+        lista= crear_lista_req1(lista)
+        header = lista[0].keys()
+        rows =  [x.values() for x in lista]
+        print(tabulate.tabulate(rows,header,tablefmt="grid",maxcolwidths= 10,maxheadercolwidths=6))
+    else:
+        print(valor)
+
+def crear_lista_req1(data_structs):
+    lista=[]
+    for data in lt.iterator(data_structs):
+        valores= data[0]
+        dicc={
+         "location-log aprox": valores[0],
+         "location-lat aprox": valores[1], 
+         "node-id": valores[2],
+         "individual-id": valores[3],
+         "individual-count": valores[4],   
+         "edge-To": data[1],
+         "edge-distance-km": data[2]
+        }
+        
+        lista.append(dicc)
+    
+    return lista
 
 def print_req_2(control):
     """
         Función que imprime la solución del Requerimiento 2 en consola
     """
     # TODO: Imprimir el resultado del requerimiento 2
-    pass
+    
+    inc= input("Ingrese el punto de encuentro de origen: ")
+    fin= input("Ingrese el punto de encuentro de destino: ")
+    valor= controller.req_2(control, inc, fin)
+    if valor!= False:
+        print(True)
+        print("")
+        lista, size, puntos_en, suma_arc= valor
+        print("Total de nodos en el arbol: " + str(size))
+        print("Total de puntos de encuentro en el arbol BFS: " + str(puntos_en))
+        print("Total de puntos de sequimiento en el arbol BFS: " + str(size- puntos_en))
+        print("Distancia total del recorrido: "+ str(round(suma_arc, 3))+ " km")
+        lista= crear_lista_req1(lista)
+        header = lista[0].keys()
+        rows =  [x.values() for x in lista]
+        print(tabulate.tabulate(rows,header,tablefmt="grid",maxcolwidths= 10,maxheadercolwidths=6))
+    else:
+        print(valor)
+
 
 
 def print_req_3(control):
@@ -212,8 +264,45 @@ def print_req_5(control):
         Función que imprime la solución del Requerimiento 5 en consola
     """
     # TODO: Imprimir el resultado del requerimiento 5
-    pass
+    puntos= input("Ingrese el mínimo de puntos de encuentro a visitar: ")
+    kil= input("Ingrese los kilometros a recorrer: ")
+    
+    inc= input("Ingrese el punto de origen: ")
+    valor= controller.req_5(control, puntos, kil, inc)
+    if valor!= False:
+        rutas, min_pun, distancia, respuesta= valor
+        print("Hay "+ str(rutas)+ " posibles rutas desde el punto: "+ inc)
+        print("El mínimo número de puntos de encuentro a visitar es: "+ str(min_pun))
+        print("La máxima distancia recorrer es de: "+ str(distancia))
+        print("*****Destalles del camino más largo*****")
+        lista= crear_lista_req_5(respuesta)
+        header = lista[0].keys()
+        rows =  [x.values() for x in lista]
+        print(tabulate.tabulate(rows,header,tablefmt="grid",maxcolwidths= 10,maxheadercolwidths=6))
+    else:
+        print(valor)
 
+def crear_lista_req_5(valor):
+    lista=[]
+    
+    list_animal=""
+    for animals in lt.iterator(valor[3]):
+        list_animal= list_animal+","+ str(animals)
+    list_animal= list_animal.strip(",")
+    
+    list_points=""
+    for point in lt.iterator(valor[2]):
+        list_points= list_points+","+ point
+    list_points= list_points.strip(",")
+    
+    dicc={ "Point Count": valor[0],
+          "Path distance [km]": valor[1],
+          "Point List": list_points,
+          "Animal Count": list_animal
+        
+    }
+    lista.append(dicc)
+    return lista
 
 def print_req_6(control):
     """

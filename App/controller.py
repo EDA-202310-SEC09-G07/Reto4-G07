@@ -68,7 +68,7 @@ def load_data(control, filename):
     for data2 in input_file_2:
         lista_eventos= model.add_list_evento(data2,lista_eventos)
     #se ordena la lista por manada, por lobo y por fecha
-    lista_eventos = model.sort(lista_eventos, 1)
+    lista_eventos= model.sort(lista_eventos, 1)
     num_event= model.data_size(lista_eventos)
 
 
@@ -124,17 +124,29 @@ def req_1(control, inc, fin):
     """
     Retorna el resultado del requerimiento 1
     """
+
     valor= model.req_1(control["moves"], inc, fin)
-    
-    return valor
+    if valor!= False:
+        lista, size, puntos_en, suma_arc= valor
+        lista= model.cinco_prim_ult(lista)
+        valor= lista, size, puntos_en, suma_arc
+        return valor
+    else:
+        return False
 
 
-def req_2(control):
+def req_2(control, inc, fin):
     """
     Retorna el resultado del requerimiento 2
     """
-    # TODO: Modificar el requerimiento 2
-    pass
+    valor= model.req_1(control["moves"], inc, fin)
+    if valor!= False:
+        lista, size, puntos_en, suma_arc= valor
+        lista= model.cinco_prim_ult(lista)
+        valor= lista, size, puntos_en, suma_arc
+        return valor
+    else:
+        return False
 
 
 def req_3(control):
@@ -153,12 +165,16 @@ def req_4(control):
     pass
 
 
-def req_5(control):
+def req_5(control, puntos, kil, inc):
     """
     Retorna el resultado del requerimiento 5
     """
     # TODO: Modificar el requerimiento 5
-    pass
+    valor= model.req_5(control, puntos, kil, inc)
+    if valor!= False:
+        return valor
+    else:
+        return False
 
 def req_6(control):
     """
