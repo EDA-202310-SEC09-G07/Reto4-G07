@@ -114,7 +114,7 @@ def compareStopIds(stop, keyvaluestop):
 
 # Funciones para agregar informacion al modelo
 
-def load_moves(control,lista_eventos):
+def load_moves(control, lista_eventos):
     """
     Función para agregar nuevos elementos a la lista
     """
