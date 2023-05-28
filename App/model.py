@@ -121,7 +121,7 @@ def load_moves(control, lista_eventos):
     mapa = control["positions"]
     grafo = control["moves"]
 
-
+    pos = 1
     anterior = None
 
     for evento in lt.iterator(lista_eventos):
@@ -132,18 +132,18 @@ def load_moves(control, lista_eventos):
         mp.put(mapa, punto, evento)
         
         if anterior is not None and individual_id == anterior["individual-local-identifier"] + "_" + anterior["tag-local-identifier"]:
+            lon1 = round(float(anterior["location-long"]), 3)
+            lat1 = round(float(anterior["location-lat"]), 3)
+            lon2 = round(float(evento["location-long"]), 3)
+            lat2 = round(float(evento["location-lat"]), 3)
             
             if anterior != evento:
-                lon1 = round(float(anterior["location-long"]), 3)
-                lat1 = round(float(anterior["location-lat"]), 3)
-                lon2 = round(float(evento["location-long"]), 3)
-                lat2 = round(float(evento["location-lat"]), 3)
                 punto_ant = crear_identificador(anterior)
                 peso = haversine(lon1, lat1, lon2, lat2)
                 gr.addEdge(grafo, punto_ant, punto, peso)
         
         anterior = evento
-
+        pos += 1
 
     control["positions"] = mapa
     control["moves"] = grafo
@@ -485,13 +485,81 @@ def req_4(data_structs):
     pass
 
 
-def req_5(data_structs):
+def req_5(data_structs, puntos, kil, inc):
     """
     Función que soluciona el requerimiento 5
     """
     # TODO: Realizar el requerimiento 5
-    pass
+    grafo= data_structs["moves"]
+    mapa_postions= data_structs["positions"]
+    lista_positions= mp.keySet(mapa_postions)
+    kil= (float(kil)/2)
+    recorridos= djk.Dijkstra(grafo, inc)
+    encuentros=om.newMap("BST",
+                      compare_arbol_caso)
+    for encuentro in lt.iterator(lista_positions):
+        costo=djk.distTo(recorridos, encuentro)
+        print(costo)
+        if costo<= kil:
+            om.put(encuentros, costo, encuentro)
+            
+    rutas= om.size(encuentros)
+    if rutas!=0:
+        valor= obtener_recorrido_max(recorridos, encuentros, puntos)
+        if valor!= False:
+            recorrido_mayor, distancia, min_pun= valor
+            print(recorrido_mayor)
+            lista_vertices=lt.newList(datastructure="ARRAY_LIST")
+            lista_animales=lt.newList(datastructure="ARRAY_LIST")
+            queue= qu.newQueue()
+            size= st.size(recorrido_mayor)
+            while not st.isEmpty(recorrido_mayor):
+                vertex = st.pop(recorrido_mayor)
+                txt= vertex.split("_")
+                if len(txt)==2:
+                    animals= gr.outdegree(grafo, vertex)
+                else:
+                    animals=1
+                lt.addLast(lista_vertices, vertex)
+                lt.addLast(lista_animales, animals)
+            lista_encuentros= sort(lista_encuentros, 2)
+            lista_animales= sort(lista_animales, 2)
+            qu.enqueue(queue, size)
+            qu.enqueue(queue, distancia)
+            qu.enqueue(queue, lista_encuentros)
+            qu.enqueue(queue, lista_animales)
+            return rutas, min_pun, distancia*2, queue
+        
+    else: 
+        return False
+    
+    return False
+        
+def obtener_recorrido_max(recorridos, mapa, valor):
+    lista= om.keySet(mapa)
+    while lt.size(lista) != 0:
+        distancia_max= om.maxKey(mapa)
+        entry= om.get(mapa, distancia_max)
+        value= me.getValue(entry)
+        path= djk.pathTo(recorridos, value)
+        puntos= st.size(path)
+        if puntos>= int(valor):
+            return path, distancia_max, puntos
+        else:
+            om.deleteMax(mapa)
+        lt.removeLast(lista)
+    return False
 
+def contar_puntos_encuentros(path):
+    puntos_en=0
+    while not st.isEmpty(path):
+            vertex = st.pop(path)
+            txt= vertex.split("_")
+            if len(txt)==2:
+                puntos_en+=1
+    return puntos_en
+            
+    
 
 def req_6(data_structs):
     """
@@ -576,4 +644,10 @@ def sort_latitud(data1,data2):
     iden, lon2, lat2 = obtener_identificador_lon_lat(data2)
     return lat1<lat2
 
-
+def compare_arbol_caso(data_1, data_2):
+    if data_1 > data_2:
+        return 1
+    elif data_1 < data_2:
+        return -1
+    else:
+        return 0

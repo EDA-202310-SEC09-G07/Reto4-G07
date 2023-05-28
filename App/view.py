@@ -264,8 +264,45 @@ def print_req_5(control):
         Función que imprime la solución del Requerimiento 5 en consola
     """
     # TODO: Imprimir el resultado del requerimiento 5
-    pass
+    puntos= input("Ingrese el mínimo de puntos de encuentro a visitar: ")
+    kil= input("Ingrese los kilometros a recorrer: ")
+    
+    inc= input("Ingrese el punto de origen: ")
+    valor= controller.req_5(control, puntos, kil, inc)
+    if valor!= False:
+        rutas, min_pun, distancia, queue= valor
+        print("Hay "+ str(rutas)+ " posibles rutas desde el punto: "+ inc)
+        print("El mínimo número de puntos de encuentro a visitar es: "+ str(min_pun))
+        print("La máxima distancia recorrer es de: "+ str(distancia))
+        print("*****Destalles del camino más largo*****")
+        lista= crear_lista_req_5(queue)
+        header = lista[0].keys()
+        rows =  [x.values() for x in lista]
+        print(tabulate.tabulate(rows,header,tablefmt="grid",maxcolwidths= 10,maxheadercolwidths=6))
+    else:
+        print(valor)
 
+def crear_lista_req_5(queue):
+    lista=[]
+    dicc={}
+    while not qu.isEmpty(queue):
+        data= qu.dequeue(queue)
+        if qu.size(queue)>3:
+            dicc["Points Count"]= data
+        elif qu.size(queue)>2:
+            dicc["Path distance [km]"]= data
+        elif qu.size(queue)>1:
+            for point in lt.iterator(data):
+                list_points= list_points+","+ point
+            list_points= list_points.strip(",")
+            dicc["Point List"]= list_points
+        else:
+            for animals in lt.iterator(data):
+                list_animal= list_animal+","+ animals
+            list_animal= list_animal.strip(",")
+            dicc["Animal Count"]= list_animal
+    lista.append(dicc)
+    return lista
 
 def print_req_6(control):
     """
