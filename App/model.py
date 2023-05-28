@@ -126,18 +126,20 @@ def load_moves(control, lista_eventos):
     for evento in lt.iterator(lista_eventos):
         punto = crear_identificador(evento)
         individual_id = evento["individual-local-identifier"] + "_" + evento["tag-local-identifier"]
-        
-        gr.insertVertex(grafo, punto)
-        mp.put(mapa, punto, evento)
+        if not gr.containsVertex(grafo, punto):
+            gr.insertVertex(grafo, punto)
+            mp.put(mapa, punto, evento)
         
         if anterior is not None and individual_id == anterior["individual-local-identifier"] + "_" + anterior["tag-local-identifier"]:
-            lon1 = round(float(anterior["location-long"]), 3)
-            lat1 = round(float(anterior["location-lat"]), 3)
-            lon2 = round(float(evento["location-long"]), 3)
-            lat2 = round(float(evento["location-lat"]), 3)
             punto_ant = crear_identificador(anterior)
-            peso = haversine(lon1, lat1, lon2, lat2)
-            gr.addEdge(grafo, punto_ant, punto, peso)
+            if gr.getEdge(grafo, punto_ant, punto)== None:
+                lon1 = round(float(anterior["location-long"]), 3)
+                lat1 = round(float(anterior["location-lat"]), 3)
+                lon2 = round(float(evento["location-long"]), 3)
+                lat2 = round(float(evento["location-lat"]), 3)
+
+                peso = haversine(lon1, lat1, lon2, lat2)
+                gr.addEdge(grafo, punto_ant, punto, peso)
         
         anterior = evento
 
@@ -495,7 +497,6 @@ def req_5(data_structs, puntos, kil, inc):
                       compare_arbol_caso)
     for encuentro in lt.iterator(lista_positions):
         costo=djk.distTo(recorridos, encuentro)
-        print(costo)
         if costo<= kil:
             om.put(encuentros, costo, encuentro)
             
@@ -504,27 +505,27 @@ def req_5(data_structs, puntos, kil, inc):
         valor= obtener_recorrido_max(recorridos, encuentros, puntos)
         if valor!= False:
             recorrido_mayor, distancia, min_pun= valor
-            print(recorrido_mayor)
             lista_vertices=lt.newList(datastructure="ARRAY_LIST")
             lista_animales=lt.newList(datastructure="ARRAY_LIST")
-            queue= qu.newQueue()
             size= st.size(recorrido_mayor)
             while not st.isEmpty(recorrido_mayor):
                 vertex = st.pop(recorrido_mayor)
+                vertex= vertex["vertexA"]
+                lt.addLast(lista_vertices, vertex)
+            
+            
+         
+            lista_vertices= sort(lista_vertices, 2)
+            lista_ver_2= lista_vertices
+            for vertex in lt.iterator(lista_ver_2):
                 txt= vertex.split("_")
                 if len(txt)==2:
                     animals= gr.outdegree(grafo, vertex)
                 else:
                     animals=1
-                lt.addLast(lista_vertices, vertex)
                 lt.addLast(lista_animales, animals)
-            lista_encuentros= sort(lista_encuentros, 2)
-            lista_animales= sort(lista_animales, 2)
-            qu.enqueue(queue, size)
-            qu.enqueue(queue, distancia)
-            qu.enqueue(queue, lista_encuentros)
-            qu.enqueue(queue, lista_animales)
-            return rutas, min_pun, distancia*2, queue
+            respuesta= size, distancia, lista_vertices, lista_animales
+            return rutas, min_pun, distancia*2, respuesta
         
     else: 
         return False
