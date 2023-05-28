@@ -121,7 +121,6 @@ def load_moves(control, lista_eventos):
     mapa = control["positions"]
     grafo = control["moves"]
 
-    pos = 1
     anterior = None
 
     for evento in lt.iterator(lista_eventos):
@@ -136,14 +135,11 @@ def load_moves(control, lista_eventos):
             lat1 = round(float(anterior["location-lat"]), 3)
             lon2 = round(float(evento["location-long"]), 3)
             lat2 = round(float(evento["location-lat"]), 3)
-            
-            if anterior != evento:
-                punto_ant = crear_identificador(anterior)
-                peso = haversine(lon1, lat1, lon2, lat2)
-                gr.addEdge(grafo, punto_ant, punto, peso)
+            punto_ant = crear_identificador(anterior)
+            peso = haversine(lon1, lat1, lon2, lat2)
+            gr.addEdge(grafo, punto_ant, punto, peso)
         
         anterior = evento
-        pos += 1
 
     control["positions"] = mapa
     control["moves"] = grafo

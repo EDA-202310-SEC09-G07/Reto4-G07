@@ -68,6 +68,7 @@ def load_data(control, filename):
     for data2 in input_file_2:
         lista_eventos= model.add_list_evento(data2,lista_eventos)
     #se ordena la lista por manada, por lobo y por fecha
+    lista_eventos= model.sort(lista_eventos, 1)
     num_event= model.data_size(lista_eventos)
 
 
