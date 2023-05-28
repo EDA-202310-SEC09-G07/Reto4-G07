@@ -31,7 +31,7 @@ import importlib
 assert config
 
 
-def newMap(omaptype='RBT', cmpfunction=None):
+def newMap(omaptype='RBT', comparefunction=None):
     """
     Crea una tabla de simbolos ordenada.
     Args:
@@ -43,7 +43,7 @@ def newMap(omaptype='RBT', cmpfunction=None):
         Exception
     """
     om = mapSelector(omaptype)
-    return om.newMap(omaptype, cmpfunction, om)
+    return om.newMap(omaptype, comparefunction, om)
 
 
 def put(map, key, value):

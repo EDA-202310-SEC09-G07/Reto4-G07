@@ -176,12 +176,12 @@ def req_5(control, puntos, kil, inc):
     else:
         return False
 
-def req_6(control):
+def req_6(control, inc, fin, gen):
     """
     Retorna el resultado del requerimiento 6
     """
-    # TODO: Modificar el requerimiento 6
-    pass
+    valor= model.req_6(control, inc, fin, gen)
+    return valor
 
 
 def req_7(control):

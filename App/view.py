@@ -309,9 +309,113 @@ def print_req_6(control):
         Función que imprime la solución del Requerimiento 6 en consola
     """
     # TODO: Imprimir el resultado del requerimiento 6
-    pass
+    inc= input("Ingrese la fecha inicial: ")
+    fin= input("Ingrese la fecha final: ")
+    gen= input("Ingrese el género: ")
+    mayor, iden_may, wolf_may, lista_may, nodos_may, menor, iden_men, wolf_men, lista_men, nodos_men, arcos, vertices= controller.req_6(control, inc, fin, gen)
+    print("Creando el nuevo grafo...")
+    print("Los vertices del nuevo grafo son: "+ str(vertices))
+    print("Los arcos del nuevo grafo son: "+ str(arcos))
+    print("*****Detalles para el lobo viajero más largo y cercano****")
+    print("El individuo con la mayor distancia de viaje es:")
+    print("         -Individual id: "+ str(iden_may))
+    
+    lista_wolf= []
+    dicc_wolf= {"individual-id": iden_may,
+                "animal-taxon" : wolf_may["animal-taxon"],
+                "animal-life-stage": wolf_may["animal-life-stage"],
+                "animal sex": wolf_may["animal-sex"],
+                "study-site": wolf_may["study-site"],
+                "travel-dist": mayor,
+                "deployment-comments": wolf_may["deployment-comments"]        
+    }
+    lista_wolf.append(dicc_wolf)
+    header = lista_wolf[0].keys()
+    rows =  [x.values() for x in lista_wolf]
+    print(tabulate.tabulate(rows,header,tablefmt="grid",maxcolwidths= 10,maxheadercolwidths=6))
+    print("")
+    print("El camino más largo para el lobo "+ str(iden_may)+ " tiene:")
+    print("         -Nodos:"+ str(nodos_may))
+    print("         -Arcos:"+ str(nodos_may-1))
+    print("         -Distancia: "+ str(mayor))
+    print("")
+    print("***************************************")
+    print("Los primeros 3 y ultimos 3 nodos son: ")
+    
+    lista_eventos= crear_lista_req6(lista_may)
+    header = lista_eventos[0].keys()
+    rows =  [x.values() for x in lista_eventos]
+    print(tabulate.tabulate(rows,header,tablefmt="grid",maxcolwidths= 10,maxheadercolwidths=6))
+    
+    
+    
+    
+    print("El individuo con la menor distancia de viaje es:")
+    print("         -Individual id: "+ str(iden_men))
+    lista_wolf= []
+    dicc_wolf= {"individual-id": iden_men,
+                "animal-taxon" : wolf_men["animal-taxon"],
+                "animal-life-stage": wolf_men["animal-life-stage"],
+                "animal sex": wolf_men["animal-sex"],
+                "study-site": wolf_men["study-site"],
+                "travel-dist": menor,
+                "deployment-comments": wolf_men["deployment-comments"]        
+    }
+    lista_wolf.append(dicc_wolf)
+    header = lista_wolf[0].keys()
+    rows =  [x.values() for x in lista_wolf]
+    print(tabulate.tabulate(rows,header,tablefmt="grid",maxcolwidths= 10,maxheadercolwidths=6))
+    print("")
+    print("El camino más largo para el lobo "+ str(iden_men)+ " tiene:")
+    print("         -Nodos:"+ str(nodos_men))
+    print("         -Arcos:"+ str(nodos_men-1))
+    print("         -Distancia: "+ str(menor))
+    print("")
+    print("***************************************")
+    print("Los primeros 3 y ultimos 3 nodos son: ")
+    lista_eventos= crear_lista_req6(lista_men)
+    header = lista_eventos[0].keys()
+    rows =  [x.values() for x in lista_eventos]
+    print(tabulate.tabulate(rows,header,tablefmt="grid",maxcolwidths= 10,maxheadercolwidths=6))
 
 
+def crear_lista_req6(data_structs):
+    lista=[]
+    
+    for data in lt.iterator(data_structs):
+        dicc={
+            "node-id": crear_identificador(data),
+            "location-long-aprox": round(float(data["location-long"]), 3),
+            "location-lat-aprox": round(float(data["location-lat"]), 3),
+            "individual-id": data["individual-local-identifier"]+"_"+data["tag-local-identifier"],
+            "individual-count": 1
+        }
+        lista.append(dicc)
+        
+    return lista
+        
+        
+def crear_identificador(data):
+    """ Crea el identificador id para agregar al grafo
+
+    Args:
+        data (dict): recibe el dato al cual se le va a crear el identificador 
+    """
+    lat= round(float(data["location-lat"]), 3)
+    lat= str(lat)
+    lat= lat.replace("-", "m")
+    lat= lat.replace(".", "p")
+    
+    lon=round(float(data["location-long"]), 3)
+    lon= str(lon)
+    lon= lon.replace("-", "m")
+    lon= lon.replace(".", "p")
+    
+    individual_id=data["individual-local-identifier"]+"_"+data["tag-local-identifier"]
+    
+    punto= lon+"_"+lat+"_"+individual_id
+    
+    return punto
 def print_req_7(control):
     """
         Función que imprime la solución del Requerimiento 7 en consola

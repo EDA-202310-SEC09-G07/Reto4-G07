@@ -68,7 +68,7 @@ def new_data_structs(control):
     manera vacía para posteriormente almacenar la información.
     """
     #TODO: Inicializar las estructuras de datos
-    control["wolfs"]= mp.newMap(20,
+    control["wolfs"]= mp.newMap(200,
                                         maptype='PROBING',
                                         loadfactor=0.5,
                                         cmpfunction=compare_map)
@@ -78,7 +78,7 @@ def new_data_structs(control):
                                     loadfactor=0.5,
                                     cmpfunction=compare_map)
     
-    control["encuentros"]= mp.newMap(66,
+    control["encuentros"]= mp.newMap(660,
                                     maptype='PROBING',
                                     loadfactor=0.5,
                                     cmpfunction=compare_map)
@@ -126,9 +126,9 @@ def load_moves(control, lista_eventos):
     for evento in lt.iterator(lista_eventos):
         punto = crear_identificador(evento)
         individual_id = evento["individual-local-identifier"] + "_" + evento["tag-local-identifier"]
-        if not gr.containsVertex(grafo, punto):
-            gr.insertVertex(grafo, punto)
-            mp.put(mapa, punto, evento)
+        
+        gr.insertVertex(grafo, punto)
+        mp.put(mapa, punto, evento)
         
         if anterior is not None and individual_id == anterior["individual-local-identifier"] + "_" + anterior["tag-local-identifier"]:
             punto_ant = crear_identificador(anterior)
@@ -158,8 +158,7 @@ def agregar_encuentros(control):
     mapa = control["encuentros"]
     mapa_positions = control["positions"]
     
-    lista = mp.keySet(mapa_positions)
-    lista = sort(lista, 2)
+    lista = sort(mp.keySet(mapa_positions), 2)
     anterior = None
 
     for punto in lt.iterator(lista):
@@ -286,7 +285,7 @@ def obtener_lista_mapa(mapa):
     return mp.keySet(mapa)
 
 def cinco_prim_ult(data_structs):    
-    if lt.size(data_structs)<=6:
+    if lt.size(data_structs)<=10:
         return data_structs
     else:
         data_structs2=lt.newList(datastructure="ARRAY_LIST")
@@ -311,6 +310,31 @@ def cinco_prim_ult(data_structs):
         
         lt.addLast(data_structs2, quintoultimo)
         lt.addLast(data_structs2, cuartoultimo)
+        lt.addLast(data_structs2, antepenultimo)
+        lt.addLast(data_structs2, penultimo)
+        lt.addLast(data_structs2, ultimo)
+        
+        
+        return data_structs2
+    
+def tres_prim_ult(data_structs):    
+    if lt.size(data_structs)<=6:
+        return data_structs
+    else:
+        data_structs2=lt.newList(datastructure="ARRAY_LIST")
+        primer = lt.firstElement(data_structs)
+        segundo= lt.getElement(data_structs, 2)
+        tercero= lt.getElement(data_structs, 3)
+        
+        ultimo= lt.lastElement(data_structs)
+        penultimo=lt.getElement(data_structs, -2)
+        antepenultimo=lt.getElement(data_structs, -3)
+        
+        
+        lt.addLast(data_structs2, primer)
+        lt.addLast(data_structs2, segundo)
+        lt.addLast(data_structs2, tercero)
+        
         lt.addLast(data_structs2, antepenultimo)
         lt.addLast(data_structs2, penultimo)
         lt.addLast(data_structs2, ultimo)
@@ -546,24 +570,192 @@ def obtener_recorrido_max(recorridos, mapa, valor):
             om.deleteMax(mapa)
         lt.removeLast(lista)
     return False
-
-def contar_puntos_encuentros(path):
-    puntos_en=0
-    while not st.isEmpty(path):
-            vertex = st.pop(path)
-            txt= vertex.split("_")
-            if len(txt)==2:
-                puntos_en+=1
-    return puntos_en
             
     
 
-def req_6(data_structs):
+def req_6(control, inc, fin, gen):
     """
     Función que soluciona el requerimiento 6
     """
-    # TODO: Realizar el requerimiento 6
-    pass
+    #Crea un arbol y una lista con los eventos en el rango ingresado, y la ordena por lobo y fecha
+    arbol= crear_arbol_fechas(control["positions"])
+    lista_rango= lista_eventos_rango(arbol, inc, fin)
+    lista_rango= sort(lista_rango, 1)
+    
+    #Obtener los lobos por género y crear una lista con ellos
+    wolfs= mp.valueSet(control["wolfs"])
+    wolfs_gen= lt.newList(datastructure="ARRAY_LIST")
+    for wolf in lt.iterator(wolfs):
+        if wolf["animal-sex"].lower()== gen:
+            lt.addLast(wolfs_gen, wolf)
+            
+    # Crea un mapa con listas de eventos de cada lobo
+            
+    mapa_wolf= crear_tabla_con_lobos_eventos(wolfs_gen, lista_rango)
+    
+    # Obtiene los mayores y menores recorridos a partir del mapa y el grafo
+    mayor= -999999
+    menor= 999999999
+    lista_may=None
+    lista_men=None
+    lista_wolfs= mp.valueSet(mapa_wolf)
+    iden_may=""
+    iden_men=""
+    
+    grafo= gr.newGraph(datastructure= "ADJ_LIST",
+                                      directed= False,
+                                      size=300000,
+                                      cmpfunction=compareStopIds)
+    
+    for eventos in lt.iterator(lista_wolfs):
+        grafo= agregar_al_grafo(grafo, eventos)
+        peso= obtener_distancia_total(grafo, eventos)
+        if peso > mayor:
+            mayor=peso
+            lista_may= eventos
+            iden_may= lt.firstElement(eventos)
+            iden_may=iden_may["individual-local-identifier"]+"_"+iden_may["tag-local-identifier"]
+        elif peso < menor:
+            lista_men= eventos
+            menor= peso
+            iden_men= lt.firstElement(eventos)
+            iden_men=iden_men["individual-local-identifier"]+"_"+iden_men["tag-local-identifier"]
+            
+    
+    wolf_may= mp.get(control["wolfs"], iden_may)
+    wolf_may= me.getValue(wolf_may)
+    nodos_may= lt.size(lista_may)
+    nodos_men= lt.size(lista_men)
+    lista_may= tres_prim_ult(lista_may)
+    lista_men= tres_prim_ult(lista_men)
+    
+    wolf_men= mp.get(control["wolfs"], iden_men)
+    wolf_men= me.getValue(wolf_men)
+    
+    
+    return mayor, iden_may, wolf_may, lista_may, nodos_may, menor, iden_men, wolf_men, lista_men, nodos_men, gr.numEdges(grafo), gr.numVertices(grafo)
+    
+def agregar_al_grafo(grafo, lista):
+    anterior=None
+    for data in lt.iterator(lista):
+        punto= crear_identificador(data)
+        gr.insertVertex(grafo, punto)
+        if anterior is not None:
+            punto_ant= crear_identificador(anterior)
+            lon1 = round(float(anterior["location-long"]), 3)
+            lat1 = round(float(anterior["location-lat"]), 3)
+            lon2 = round(float(data["location-long"]), 3)
+            lat2 = round(float(data["location-lat"]), 3)
+
+            peso = haversine(lon1, lat1, lon2, lat2)
+            gr.addEdge(grafo, punto_ant, punto, peso)
+        
+        anterior= data
+    
+    return grafo
+    
+    
+def obtener_distancia_total(grafo, lista):
+    peso=0
+    first= lt.firstElement(lista)
+    punto= crear_identificador(first)
+    last= lt.lastElement(lista)
+    punto_last= crear_identificador(last)
+    search= djk.Dijkstra(grafo, punto)
+    peso= djk.distTo(search, punto_last)
+    
+    return peso
+
+
+
+def crear_tabla_con_lobos_eventos(wolfs_gen, lista_rango):
+    mapa_event= mp.newMap(200,
+                                        maptype='PROBING',
+                                        loadfactor=0.5,
+                                        cmpfunction=compare_map)
+    lista_eventos= lt.newList(datastructure="ARRAY_LIST")
+    first= lt.firstElement(lista_rango)
+    anterior= None
+    for evento in lt.iterator(lista_rango):
+        individual_id=evento["individual-local-identifier"]+"_"+evento["tag-local-identifier"]
+        if individual_id == anterior:
+            entry= mp.get(mapa_event, individual_id)
+            value= me.getValue(entry)
+            lt.addLast(value, evento)
+            mp.put(mapa_event, individual_id, value)
+        else:
+            lista_eventos= lt.newList(datastructure="ARRAY_LIST")
+            lt.addLast(lista_eventos, evento)
+            mp.put(mapa_event, individual_id, lista_eventos)
+            
+        anterior= individual_id
+    
+    mapa_wolfs= mp.newMap(200,
+                                        maptype='PROBING',
+                                        loadfactor=0.5,
+                                        cmpfunction=compare_map) 
+    
+    for wolf in lt.iterator(wolfs_gen):
+        individual_id=wolf["animal-id"]+"_"+wolf["tag-id"]
+        entry= mp.get(mapa_event, individual_id)
+        if entry != None:
+            value= me.getValue(entry)
+            mp.put(mapa_wolfs, individual_id, value)
+        
+    return mapa_wolfs
+    
+    
+    
+    
+    
+    
+def lista_eventos_rango(arbol, inc, fin):
+    lista_rango= om.values(arbol, inc, fin)
+    lista_eventos=lt.newList(datastructure="ARRAY_LIST")
+    for data in lt.iterator(lista_rango):
+        for evento in lt.iterator(data):
+            lt.addLast(lista_eventos, evento)
+    
+    return lista_eventos
+
+def crear_arbol_fechas(mapa):
+    lista= crear_lista_movimientos(mapa)
+    lista= sort(lista, 4)
+    arbol=om.newMap("RBT",
+                      compare_arbol_caso)
+    
+    lista_valores= lt.newList(datastructure="ARRAY_LIST")
+    first= lt.firstElement(lista)
+    fecha=first["timestamp"]
+    for data in lt.iterator(lista):
+        fecha_data=data["timestamp"]
+        if data== first:
+            lt.addLast(lista_valores, data)
+            om.put(arbol, fecha_data, lista_valores)
+        elif fecha_data== fecha:
+            entry= om.get(arbol, fecha_data)
+            value= me.getValue(entry)
+            lt.addLast(value, data)
+            om.put(arbol, fecha, value)
+        else:
+            lista_valores= lt.newList(datastructure="ARRAY_LIST")
+            lt.addLast(lista_valores, data)
+            om.put(arbol, fecha_data, lista_valores)
+            fecha= fecha_data
+
+    return arbol
+    
+
+
+def crear_lista_movimientos(mapa):
+    lista=lt.newList(datastructure="ARRAY_LIST")
+    lista_posiciones= mp.valueSet(mapa)
+    for data in lt.iterator(lista_posiciones):
+        if type(data) != str:
+            lt.addLast(lista, data)
+            
+    return lista
+
 
 
 def req_7(data_structs):
@@ -618,6 +810,8 @@ def sort(data_structs, num):
         data_structs= merg.sort(data_structs, sort_lon_lat)        
     elif num == 3:
         data_structs= merg.sort(data_structs, sort_latitud)
+    elif num == 4:
+        data_structs= merg.sort(data_structs, sort_fecha)
     return data_structs
 
 
@@ -626,9 +820,17 @@ def sort_event(data1,data2):
         return True
     elif str(data1["individual-local-identifier"]) == str(data2["individual-local-identifier"]):
         
-        return data1["timestamp"] < data2["timestamp"]
+        if str(data1["tag-local-identifier"]) < str(data2["tag-local-identifier"]):
+            return True
+        elif str(data1["tag-local-identifier"]) == str(data2["tag-local-identifier"]):
+            return data1["timestamp"] < data2["timestamp"]
+        else: 
+            return False
     else:
         return False
+    
+def sort_fecha(data1,data2):
+    return data1["timestamp"] < data2["timestamp"]
     
 def sort_lon_lat(data1,data2):
         
