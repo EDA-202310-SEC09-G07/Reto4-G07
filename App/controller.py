@@ -126,13 +126,8 @@ def req_1(control, inc, fin):
     """
 
     valor= model.req_1(control["moves"], inc, fin)
-    if valor!= False:
-        lista, size, puntos_en, suma_arc= valor
-        lista= model.cinco_prim_ult(lista)
-        valor= lista, size, puntos_en, suma_arc
-        return valor
-    else:
-        return False
+    
+    return valor
 
 
 def req_2(control, inc, fin):
@@ -184,12 +179,12 @@ def req_6(control, inc, fin, gen):
     return valor
 
 
-def req_7(control):
+def req_7(control, inc, fin, tem_min, tem_max):
     """
     Retorna el resultado del requerimiento 7
     """
-    # TODO: Modificar el requerimiento 7
-    pass
+    value= model.req_7(control, inc, fin, tem_min, tem_max)
+    return value
 
 
 def req_8(control):

@@ -758,13 +758,88 @@ def crear_lista_movimientos(mapa):
 
 
 
-def req_7(data_structs):
+def req_7(control, inc, fin, tem_min, tem_max):
     """
     Función que soluciona el requerimiento 7
     """
-    # TODO: Realizar el requerimiento 7
-    pass
+    #Crea un arbol y una lista con los eventos en el rango ingresado, y la ordena por lobo y fecha
+    arbol= crear_arbol_fechas(control["positions"])
+    lista_rango= lista_eventos_rango(arbol, inc, fin)
+    lista_rango= sort(lista_rango, 1)
+    
+    #Crear lista de eventos apartir de la temperatura
+    lista_eventos=lt.newList(datastructure="ARRAY_LIST")
+    for evento in lt.iterator(lista_rango):
+        if float(evento["external-temperature"])> float(tem_min) and  float(evento["external-temperature"])<float(tem_max):
+            lt.addLast(lista_eventos, evento)
+            
+    lista_eventos= sort(lista_eventos, 1)
+    grafo= crear_grafo_manadas(lista_eventos)
+    search= scc.KosarajuSCC(grafo)
+    
+    
+    
+    
 
+def crear_grafo_manadas(lista):
+    lista_puntos=lt.newList(datastructure="ARRAY_LIST")
+    anterior= None
+    grafo= gr.newGraph(datastructure= "ADJ_LIST",
+                                      directed= False,
+                                      size=300000,
+                                      cmpfunction=compareStopIds)
+    search= scc.KosarajuSCC(grafo)
+    print(search)
+    anterior = None
+
+    for evento in lt.iterator(lista):
+        punto = crear_identificador(evento)
+        individual_id = evento["individual-local-identifier"] + "_" + evento["tag-local-identifier"]
+        
+        gr.insertVertex(grafo, punto)
+        
+        if anterior is not None and individual_id == anterior["individual-local-identifier"] + "_" + anterior["tag-local-identifier"]:
+            punto_ant = crear_identificador(anterior)
+            if gr.getEdge(grafo, punto_ant, punto)== None:
+                lon1 = round(float(anterior["location-long"]), 3)
+                lat1 = round(float(anterior["location-lat"]), 3)
+                lon2 = round(float(evento["location-long"]), 3)
+                lat2 = round(float(evento["location-lat"]), 3)
+
+                peso = haversine(lon1, lat1, lon2, lat2)
+                gr.addEdge(grafo, punto_ant, punto, peso)
+        
+        anterior = evento
+        
+    lista_puntos= sort(lista_puntos, 2)
+    anterior = None
+
+    for punto in lt.iterator(lista_puntos):
+        if anterior is not None:
+            iden1, lon1, lat1 = obtener_identificador_lon_lat(anterior)
+            iden2, lon2, lat2 = obtener_identificador_lon_lat(punto)
+            if (lon2, lat2) == (lon1, lat1):
+                encuentro = f"{lon1}_{lat1}"
+                if gr.containsVertex(grafo, encuentro):
+                    gr.addEdge(grafo, encuentro, punto, 0)
+                    gr.addEdge(grafo, punto, encuentro, 0)
+                else:
+                    gr.insertVertex(grafo, encuentro)
+                    gr.addEdge(grafo, encuentro, anterior, 0)
+                    gr.addEdge(grafo, anterior, encuentro, 0)
+                    gr.addEdge(grafo, encuentro, punto, 0)
+                    gr.addEdge(grafo, punto, encuentro, 0)
+            else:
+                encuentro = f"{lon2}_{lat2}"
+
+
+        else:
+            iden, lon2, lat2 = obtener_identificador_lon_lat(punto)
+        
+        anterior = punto
+        
+    return grafo
+        
 
 def req_8(data_structs):
     """

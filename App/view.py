@@ -421,7 +421,11 @@ def print_req_7(control):
         Función que imprime la solución del Requerimiento 7 en consola
     """
     # TODO: Imprimir el resultado del requerimiento 7
-    pass
+    inc= input("Ingrese la fecha inicial: ")
+    fin= input("Ingrese la fecha final: ")
+    tep_min= input("Ingrese la temperatura mínima: ")
+    tep_max= input("Ingrese la temperatura máxima: ")
+    valor= controller.req_7(control, inc, fin, tep_min, tep_max)
 
 
 def print_req_8(control):
