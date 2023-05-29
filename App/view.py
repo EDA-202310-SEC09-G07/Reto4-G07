@@ -147,7 +147,7 @@ def load_data(control,filename):
     
     return control
     
-def crear_lista_carga(queue):
+def crear_lista_carga(queue): 
     lista=[]
     for i in range(qu.size(queue)):
         data= qu.dequeue(queue)
@@ -256,8 +256,11 @@ def print_req_4(control):
         Función que imprime la solución del Requerimiento 4 en consola
     """
     # TODO: Imprimir el resultado del requerimiento 4
-    pass
-
+    ori_lon = input("Ingrese la longitud del punto de origen: ")
+    ori_lat = input("Ingrese la latitud del punto de origen: ")
+    des_lon = input("Ingrese la longitud del punto de destino: ")
+    des_lat = input("Ingrese la latitud del punto de destino: ")
+    valor = controller.req_5(control, ori_lon, ori_lat, des_lon, des_lat)
 
 def print_req_5(control):
     """

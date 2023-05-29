@@ -499,7 +499,7 @@ def req_3(data_structs):
     pass
 
 
-def req_4(data_structs):
+def req_4(data, ori_lon, ori_lat, des_lon, des_lat):
     """
     Función que soluciona el requerimiento 4
     """

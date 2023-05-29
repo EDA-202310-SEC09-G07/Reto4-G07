@@ -152,12 +152,11 @@ def req_3(control):
     pass
 
 
-def req_4(control):
+def req_4(data, ori_lon, ori_lat, des_lon, des_lat):
     """
     Retorna el resultado del requerimiento 4
     """
-    # TODO: Modificar el requerimiento 4
-    pass
+    valor= model.req_4(data, ori_lon, ori_lat, des_lon, des_lat)
 
 
 def req_5(control, puntos, kil, inc):
