@@ -260,7 +260,7 @@ def print_req_4(control):
     ori_lat = input("Ingrese la latitud del punto de origen: ")
     des_lon = input("Ingrese la longitud del punto de destino: ")
     des_lat = input("Ingrese la latitud del punto de destino: ")
-    valor = controller.req_5(control, ori_lon, ori_lat, des_lon, des_lat)
+    valor = controller.req_4(control, ori_lon, ori_lat, des_lon, des_lat)
 
 def print_req_5(control):
     """
