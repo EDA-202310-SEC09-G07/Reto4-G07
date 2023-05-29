@@ -218,12 +218,12 @@ def crear_identificador(data):
     Args:
         data (dict): recibe el dato al cual se le va a crear el identificador 
     """
-    lat= round(float(data["location-lat"]), 3)
+    lat= f"{float(data['location-lat']):.3f}"
     lat= str(lat)
     lat= lat.replace("-", "m")
     lat= lat.replace(".", "p")
     
-    lon=round(float(data["location-long"]), 3)
+    lon=f"{float(data['location-long']):.3f}"
     lon= str(lon)
     lon= lon.replace("-", "m")
     lon= lon.replace(".", "p")
