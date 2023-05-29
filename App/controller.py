@@ -156,7 +156,7 @@ def req_4(data, ori_lon, ori_lat, des_lon, des_lat):
     """
     Retorna el resultado del requerimiento 4
     """
-    valor= model.req_4(data, ori_lon, ori_lat, des_lon, des_lat)
+    valor= model.req_4(data, float(ori_lon), float(ori_lat), float(des_lon), float(des_lat))
 
 
 def req_5(control, puntos, kil, inc):

@@ -504,9 +504,39 @@ def req_4(data, ori_lon, ori_lat, des_lon, des_lat):
     Función que soluciona el requerimiento 4
     """
     # TODO: Realizar el requerimiento 4
-    pass
-
-
+    postions = data["encuentros"]
+    lista_positions= mp.keySet(postions)
+    p1 = lt.firstElement(lista_positions)
+    _, dist1_lon, dist1_lat = obtener_identificador_lon_lat(p1)
+    dist1_lon, dist1_lat = convertir_lon_lat(dist1_lon, dist1_lat)
+    dist_ori = haversine(dist1_lon, dist1_lat, ori_lon, ori_lat)
+    dist_des = haversine(dist1_lon, dist1_lat, des_lon, des_lat)
+    ori = p1
+    des = p1
+    for pos in lt.iterator(lista_positions):
+        _, lon, lat = obtener_identificador_lon_lat(pos)
+        lon, lat = convertir_lon_lat(lon, lat)
+        dist_ori_pos = haversine(lon, lat, ori_lon, ori_lat)
+        dist_des_pos = haversine(lon, lat, des_lon, des_lat)
+        if dist_ori_pos < dist_ori:
+            dist_ori = dist_ori_pos
+            ori = pos
+        if dist_des_pos < dist_des:
+            dist_des = dist_des_pos
+            des = pos
+    grafo= data["moves"]        
+    rec = djk.Dijkstra(grafo, ori)
+    if djk.hasPathTo(rec, des):
+        costo = djk.distTo(rec, des)
+        camino = djk.pathTo(rec, des)
+        num_nodos = st.size(camino)
+        num_arcos = num_nodos - 1 
+    else:
+        costo = "Desconocido"
+    
+    numlobos = 0
+    return dist_ori, dist_des, costo, num_nodos, num_lobos, num_arcos
+    
 def req_5(data_structs, puntos, kil, inc):
     """
     Función que soluciona el requerimiento 5
