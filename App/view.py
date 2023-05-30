@@ -247,7 +247,14 @@ def print_req_3(control):
         Función que imprime la solución del Requerimiento 3 en consola
     """
     # TODO: Imprimir el resultado del requerimiento 3
-    pass
+    print("calculando los territorios de los lobos con componentes fuertemente conectados")
+    valor= controller.req_3(control)
+    print(valor["value"])
+    print("llegue al final xd")
+    #lista_eventos= crear_lista_req4(valor)
+    #header = lista_eventos[0].keys()
+    #rows =  [x.values() for x in lista_eventos]
+    #print(tabulate.tabulate(rows,header,tablefmt="grid",maxcolwidths= 10,maxheadercolwidths=6))
 
 
 def print_req_4(control):
