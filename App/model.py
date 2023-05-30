@@ -718,7 +718,6 @@ def req_5(data_structs, puntos, kil, inc):
                 lt.addLast(lista_animales, animals)
             respuesta= size, distancia, lista_vertices, lista_animales
             if True: 
-                print(lista_mapa)
                 iterator = lt.iterator(lista_mapa)
                 _, ln_i, lt_i = obtener_identificador_lon_lat(lt.firstElement(lista_mapa))
                 ln_i, lt_i = convertir_lon_lat(ln_i, lt_i)
@@ -808,6 +807,19 @@ def req_6(control, inc, fin, gen):
     wolf_may= me.getValue(wolf_may)
     nodos_may= lt.size(lista_may)
     nodos_men= lt.size(lista_men)
+    if True: 
+        iterator = lt.iterator(lista_mapa)
+        _, ln_i, lt_i = obtener_identificador_lon_lat(lt.firstElement(lista_mapa))
+        ln_i, lt_i = convertir_lon_lat(ln_i, lt_i)
+        m = folium.Map(location=[lt_i, ln_i], zoom_start=12)
+        trail = []
+        for i in iterator:
+            _, i_ln, i_lt = obtener_identificador_lon_lat(i)
+            i_ln, i_lt = convertir_lon_lat(i_ln, i_lt)
+            trail.append([i_lt, i_ln])
+        folium.PolyLine(trail).add_to(m)
+        output_file = "req5.html"
+    m.save(output_file)
     lista_may= tres_prim_ult(lista_may)
     lista_men= tres_prim_ult(lista_men)
     
@@ -957,7 +969,6 @@ def req_7(control, inc, fin, tem_min, tem_max):
             
     lista_eventos= sort(lista_eventos, 1)
     grafo= crear_grafo_manadas(lista_eventos)
-
     #se ejecuta kosaraju y se organizan los datos
     KosarajuData = scc.KosarajuSCC(grafo) 
     idscc = KosarajuData['idscc']
