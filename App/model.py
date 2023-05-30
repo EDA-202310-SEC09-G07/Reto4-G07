@@ -517,12 +517,52 @@ def req_2(data_structs, inc, fin):
         return False
 
 
-def req_3(data_structs):
+def req_3(control):
     """
     Función que soluciona el requerimiento 3
     """
-    # TODO: Realizar el requerimiento 3
-    pass
+    
+    #se ejecuta kosaraju y se almacena los IDSCC o los identificadores de las manadas
+    KosarajuData = scc.KosarajuSCC(control['moves']) 
+    idscc = KosarajuData['idscc']
+    IDkeys = mp.keySet(idscc)
+    respuesta= datos_kosaraju(control,idscc,KosarajuData)
+  
+    
+def datos_kosaraju(control,idscc,IDkeys):
+    """funcion para cargar y organizar los datos generados por el alogritmo de KosarajuSCC
+
+    Args:
+        control: el modelo
+        idscc: tabla con las idscc generadas por el alogritmo de kosaraju
+        IDkeys: La llaves de la tabla idscc
+    """
+    infoManadas = mp.newMap(maptype="PROBING")
+    for IDkey in lt.iterator(IDkeys):
+        manada = mp.get(idscc,IDkey)
+        lon= getLongitud(IDkey)
+        lat= getLatitud(IDkey)
+        
+        if not mp.contains(infoManadas, manada):
+            info = mp.newMap(maptype="PROBING")
+            nodeIds = lt.newList(datastructure="ARRAY_LIST")
+            Wolfs = lt.newList(datastructure="ARRAY_LIST")
+            wolfDetails = lt.newList(datastructure="ARRAY_LIST")
+            info = infoManada(control, info, nodeIds, wolfDetails, lat, lat, lon, lon, IDkey, Wolfs)  
+            mp.put(infoManadas, manada, info)
+        else:
+            info = mp.get(infoManadas, manada)['value']
+            nodeIds = mp.get(info, "Nodes Ids")['value']
+            Wolfs = mp.get(info, "Wolfs")['value']
+            wolfDetails = mp.get(info, "Wolfs Details")['value']
+            min_lat = min(float(mp.get(info, "min-lat")['value']), lat)
+            max_lat = max(float(mp.get(info, "max-lat")['value']), lat)
+            min_long = min(float(mp.get(info, "min-long")['value']), lon)
+            max_long = max(float(mp.get(info, "max-long")['value']), lon)
+            info = infoManada(control, info, nodeIds,wolfDetails,min_lat, max_lat, min_long, max_long, IDkey, Wolfs)
+    
+    return infoManadas
+        
 
 
 def req_4(data, ori_lon, ori_lat, des_lon, des_lat):
@@ -975,28 +1015,62 @@ def req_8(data_structs):
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 
-def compare(data_1, data_2):
+def infoManada(control, info, nodeIds, wolfDetails, min_lat, max_lat, min_long, max_long, point, Wolfs):
+    """"
+    Actualiza los campos de información de una manada
     """
-    Función encargada de comparar dos datos
+    lt.addLast(nodeIds, point)
+    mp.put(info, "Nodes Ids", nodeIds)
+    mp.put(info, "SCC Size", lt.size(nodeIds))
+    mp.put(info, "min-lat", min_lat)
+    mp.put(info, "max-lat", max_lat)
+    mp.put(info, "min-long", min_long)
+    mp.put(info, "max-long", max_long)
+    if (mp.contains(control['locations'], point)):
+        individualId = mp.get(control['locations'], point)['value']
+        individualId = individualId['individual-id']
+        if (mp.contains(control["wolfs"], individualId)) and (not lt.isPresent(Wolfs, individualId)):
+            lt.addLast(wolfDetails, getWolfsDetails(control, individualId)) 
+            lt.addLast(Wolfs, individualId)
+    mp.put(info, "Wolfs", Wolfs)
+    mp.put(info, "Wolfs Count", lt.size(wolfDetails))
+    mp.put(info, "Wolfs Details", wolfDetails)
+    return info
+
+
+def getWolfsDetails(control, individualId):
     """
-    #TODO: Crear función comparadora de la lista
-    pass
-
-# Funciones de ordenamiento
-
-
-def sort_criteria(data_1, data_2):
-    """sortCriteria criterio de ordenamiento para las funciones de ordenamiento
-
-    Args:
-        data1 (_type_): _description_
-        data2 (_type_): _description_
-
-    Returns:
-        _type_: _description_
+    Da el formato de información de lobos requeridos 
+    en el requerimiento 3
     """
-    #TODO: Crear función comparadora para ordenar
-    pass
+    wolf = {
+        'individual-id': None,
+        'animal-sex': None,
+        'animal-life-stage': None,
+        'study-site': None,
+        'deployment-comments': None,}
+
+    wolfInfo = mp.get(control['wolfs'], individualId)['value']
+    wolf['individual-id'] = individualId
+    wolf['animal-sex'] = wolfInfo['animal-sex'] if wolfInfo['animal-sex'] != "" else "Unknown"
+    wolf['animal-life-stage'] = wolfInfo['animal-life-stage'] if wolfInfo['animal-life-stage'] != "" else "Unknown"
+    wolf['study-site'] = wolfInfo['study-site'] if wolfInfo['study-site'] != "" else "Unknown"
+    wolf['deployment-comments'] = wolfInfo['deployment-comments'] if wolfInfo['deployment-comments'] != "" else "Unknown"
+    
+    return wolf
+
+
+def getLongitud(ID):
+    """
+        Retorna la latitud de un IDkey
+    """
+    return float(ID.split('_')[0].replace('m', '-').replace('p', '.'))
+
+def getLatitud(ID):
+    """
+        Retorna la latitud de un IDkey
+    """
+    return float(ID.split('_')[1].replace('m', '-').replace('p', '.'))
 
 def sort(data_structs, num):
     """
