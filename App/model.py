@@ -504,8 +504,10 @@ def req_4(data, ori_lon, ori_lat, des_lon, des_lat):
     Función que soluciona el requerimiento 4
     """
     # TODO: Realizar el requerimiento 4
-    postions = data["encuentros"]
-    lista_positions= mp.keySet(postions)
+    lista = lt.newList(datastructure="ARRAY_LIST")
+    lobos = lt.newList(datastructure="ARRAY_LIST")
+    positions = data["encuentros"]
+    lista_positions= mp.keySet(positions)
     p1 = lt.firstElement(lista_positions)
     _, dist1_lon, dist1_lat = obtener_identificador_lon_lat(p1)
     dist1_lon, dist1_lat = convertir_lon_lat(dist1_lon, dist1_lat)
@@ -530,12 +532,18 @@ def req_4(data, ori_lon, ori_lat, des_lon, des_lat):
         costo = djk.distTo(rec, des)
         camino = djk.pathTo(rec, des)
         num_nodos = st.size(camino)
+        for _ in range(num_nodos):
+            ele = st.pop
+            lt.addLast(lista, ele)
+            print(ele)
         num_arcos = num_nodos - 1 
+        lista_final = tres_prim_ult(lista)
     else:
         costo = "Desconocido"
     
-    numlobos = 0
-    return dist_ori, dist_des, costo, num_nodos, num_lobos, num_arcos
+    num_lobos = 0
+
+    return dist_ori, dist_des, costo, num_nodos, num_lobos, num_arcos, lista_final
     
 def req_5(data_structs, puntos, kil, inc):
     """

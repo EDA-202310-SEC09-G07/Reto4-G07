@@ -260,7 +260,19 @@ def print_req_4(control):
     ori_lat = input("Ingrese la latitud del punto de origen: ")
     des_lon = input("Ingrese la longitud del punto de destino: ")
     des_lat = input("Ingrese la latitud del punto de destino: ")
-    valor = controller.req_4(control, ori_lon, ori_lat, des_lon, des_lat)
+    dist_ori, dist_des, costo, num_nodos, num_lobos, num_arcos, lista_final = controller.req_4(control, ori_lon, ori_lat, des_lon, des_lat)
+    print("Distancia del punto de encuentro de origen al punto de origen: " + str(dist_ori) + " km")
+    print()
+    print("Distancia del punto de encuentro de destino al punto de destino: " + str(dist_des) + " km")
+    print()
+    print("Distancia recorrida entre los puntos de encuentro de origen y destino: " + str(costo) + " km")
+    print()
+    print("Total de puntos de encuentro que pertenecen al camino identificado: " + str(num_nodos))
+    print()
+    print("Total de individuos/lobos distintos que utilizan el corredor identificado: " + str(num_lobos))
+    print()
+    print("Total de segmentos que conforman la ruta identificada: " + str(num_arcos))
+
 
 def print_req_5(control):
     """
