@@ -134,7 +134,7 @@ def req_2(control, inc, fin):
     """
     Retorna el resultado del requerimiento 2
     """
-    valor= model.req_1(control["moves"], inc, fin)
+    valor= model.req_2(control["moves"], inc, fin)
     if valor!= False:
         lista, size, puntos_en, suma_arc= valor
         lista= model.cinco_prim_ult(lista)

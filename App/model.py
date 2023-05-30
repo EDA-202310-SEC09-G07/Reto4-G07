@@ -506,6 +506,7 @@ def req_4(data, ori_lon, ori_lat, des_lon, des_lat):
     # TODO: Realizar el requerimiento 4
     lista = lt.newList(datastructure="ARRAY_LIST")
     lobos = lt.newList(datastructure="ARRAY_LIST")
+    mapa_postions = data["positions"]
     positions = data["encuentros"]
     lista_positions= mp.keySet(positions)
     p1 = lt.firstElement(lista_positions)
@@ -533,14 +534,22 @@ def req_4(data, ori_lon, ori_lat, des_lon, des_lat):
         camino = djk.pathTo(rec, des)
         num_nodos = st.size(camino)
         for _ in range(num_nodos):
-            ele = st.pop
+            ele = st.pop(camino)
             lt.addLast(lista, ele)
             print(ele)
-        num_arcos = num_nodos - 1 
-        lista_final = tres_prim_ult(lista)
+            print(mp.get(mapa_postions, ele))
+            print(lista)
+        if num_nodos != 0:
+            num_arcos = num_nodos - 1
+        else:
+            num_arcos = 0 
     else:
         costo = "Desconocido"
-    
+        num_nodos = "Desconocido"
+        num_lobos = "Desconocido"
+        num_arcos = "Desconocido"
+
+    lista_final = tres_prim_ult(lista)
     num_lobos = 0
 
     return dist_ori, dist_des, costo, num_nodos, num_lobos, num_arcos, lista_final
