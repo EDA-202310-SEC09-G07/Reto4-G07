@@ -527,6 +527,7 @@ def req_3(control):
     idscc = KosarajuData['idscc']
     IDkeys = mp.keySet(idscc)
     respuesta= datos_kosaraju(control,idscc,KosarajuData)
+    return respuesta
   
     
 def datos_kosaraju(control,idscc,IDkeys):
@@ -939,7 +940,13 @@ def req_7(control, inc, fin, tem_min, tem_max):
             
     lista_eventos= sort(lista_eventos, 1)
     grafo= crear_grafo_manadas(lista_eventos)
-    search= scc.KosarajuSCC(grafo)
+
+    #se ejecuta kosaraju y se organizan los datos
+    KosarajuData = scc.KosarajuSCC(grafo) 
+    idscc = KosarajuData['idscc']
+    IDkeys = mp.keySet(idscc)
+    respuesta= datos_kosaraju(control,idscc,KosarajuData)
+    return respuesta
     
     
     
