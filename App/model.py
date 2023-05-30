@@ -530,9 +530,12 @@ def req_4(data, ori_lon, ori_lat, des_lon, des_lat):
     Función que soluciona el requerimiento 4
     """
     # TODO: Realizar el requerimiento 4
+    cont = 1
     lista = lt.newList(datastructure="ARRAY_LIST")
     lista2 = lt.newList(datastructure="ARRAY_LIST")
     lobos = lt.newList(datastructure="ARRAY_LIST")
+    lista_mapa = lt.newList(datastructure="ARRAY_LIST")
+    lista_enc = lt.newList(datastructure="ARRAY_LIST")
     mapa_postions = data["positions"]
     positions = data["encuentros"]
     lista_positions= mp.keySet(positions)
@@ -559,7 +562,6 @@ def req_4(data, ori_lon, ori_lat, des_lon, des_lat):
     if djk.hasPathTo(rec, des):
         costo = djk.distTo(rec, des)
         camino = djk.pathTo(rec, des)
-        print(camino)
         num_nodos = st.size(camino)
         for _ in range(num_nodos):
             ele = st.pop(camino)
@@ -571,13 +573,34 @@ def req_4(data, ori_lon, ori_lat, des_lon, des_lat):
             id, a, b = obtener_identificador_lon_lat(i)
             if id == 0: 
                 dato = crear_datos_req4(grafo, i)
-                lt.addLast(lista2, dato)
+                lt.addLast(lista_enc, i)
             else:
                 if not lt.isPresent(lobos, str(id)):
                     lt.addLast(lobos, str(id))
+                dato = crear_datos_req4(grafo, i)    
+            lt.addLast(lista_mapa, dato)
         num_arcos = num_nodos
+        for c in lt.iterator(lista_enc):
+            cont += 1
+            dato = crear_datos_req4(grafo, c)
+            if c != lt.lastElement(lista):
+                dist_nxt = djk.distTo(rec, lt.getElement(lista_enc, cont)) - djk.distTo(rec, c)
+            else:
+                dist_nxt = 0
+            dato.append(dist_nxt)
+            lt.addLast(lista2, dato)
+
         if True:
-            a = 0
+            iterator = lt.iterator(lista_mapa)
+            ln_i = lt.firstElement(lista_mapa)[0]
+            lt_i = lt.firstElement(lista_mapa)[1]
+            m = folium.Map(location=[lt_i, ln_i], zoom_start=12)
+            trail = []
+            for i in iterator:
+                trail.append([i[1], i[0]])
+            folium.PolyLine(trail).add_to(m)
+            output_file = "req4.html"
+            m.save(output_file)
 
 
     else:
@@ -606,7 +629,7 @@ def crear_datos_req4(grafo, vertex):
         individual_id= iden
     individual_count= individual_id.split(",")
     individual_count=len(individual_count)
-    return lon, lat, vertex, individual_id, individual_count
+    return [lon, lat, vertex, individual_id, individual_count]
 
 def req_5(data_structs, puntos, kil, inc):
     """

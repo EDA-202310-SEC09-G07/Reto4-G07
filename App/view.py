@@ -287,7 +287,8 @@ def crear_lista_req4(data_structs):
             "location-long-aprox": round(data[0], 3),
             "location-lat-aprox": round(data[1], 3),
             "individual-id": data[3],
-            "individual-count": data[4]
+            "individual-count": data[4],
+            "next-node": data[5]
         }
         lista.append(dicc)
         
@@ -314,7 +315,7 @@ def print_req_5(control):
         print(tabulate.tabulate(rows,header,tablefmt="grid",maxcolwidths= 10,maxheadercolwidths=6))
     else:
         print(valor)
-    
+
 def crear_lista_req_5(valor):
     lista=[]
     
