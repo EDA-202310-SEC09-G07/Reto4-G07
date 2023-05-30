@@ -260,6 +260,7 @@ def print_req_4(control):
     des_lon = input("Ingrese la longitud del punto de destino: ")
     des_lat = input("Ingrese la latitud del punto de destino: ")
     dist_ori, dist_des, costo, num_nodos, num_lobos, num_arcos, lista_final = controller.req_4(control, ori_lon, ori_lat, des_lon, des_lat)
+    print()
     print("Distancia del punto de encuentro de origen al punto de origen: " + str(dist_ori) + " km")
     print()
     print("Distancia del punto de encuentro de destino al punto de destino: " + str(dist_des) + " km")
@@ -282,11 +283,11 @@ def crear_lista_req4(data_structs):
     
     for data in lt.iterator(data_structs):
         dicc={
-            "node-id": crear_identificador(data),
-            "location-long-aprox": round(float(data["location-long"]), 3),
-            "location-lat-aprox": round(float(data["location-lat"]), 3),
-            "individual-id": data["individual-local-identifier"]+"_"+data["tag-local-identifier"],
-            "individual-count": 1
+            "node-id": data[2],
+            "location-long-aprox": round(data[0], 3),
+            "location-lat-aprox": round(data[1], 3),
+            "individual-id": data[3],
+            "individual-count": data[4]
         }
         lista.append(dicc)
         
@@ -313,7 +314,7 @@ def print_req_5(control):
         print(tabulate.tabulate(rows,header,tablefmt="grid",maxcolwidths= 10,maxheadercolwidths=6))
     else:
         print(valor)
-
+    
 def crear_lista_req_5(valor):
     lista=[]
     

@@ -559,6 +559,7 @@ def req_4(data, ori_lon, ori_lat, des_lon, des_lat):
     if djk.hasPathTo(rec, des):
         costo = djk.distTo(rec, des)
         camino = djk.pathTo(rec, des)
+        print(camino)
         num_nodos = st.size(camino)
         for _ in range(num_nodos):
             ele = st.pop(camino)
@@ -569,13 +570,15 @@ def req_4(data, ori_lon, ori_lat, des_lon, des_lat):
         for i in lt.iterator(lista):
             id, a, b = obtener_identificador_lon_lat(i)
             if id == 0: 
-                lt.addLast(lista2, i)
-                print(me.getValue(mp.get(mapa_postions, i)))
+                dato = crear_datos_req4(grafo, i)
+                lt.addLast(lista2, dato)
             else:
                 if not lt.isPresent(lobos, str(id)):
                     lt.addLast(lobos, str(id))
-                    print(me.getValue(mp.get(mapa_postions, i)))
         num_arcos = num_nodos
+        if True:
+            a = 0
+
 
     else:
         costo = "Desconocido"
@@ -583,11 +586,28 @@ def req_4(data, ori_lon, ori_lat, des_lon, des_lat):
         num_lobos = "Desconocido"
         num_arcos = "Desconocido"
 
-    lista_final = tres_prim_ult(lista)
+    lista_final = tres_prim_ult(lista2)
     num_lobos = lt.size(lobos)
+    return dist_ori, dist_des, costo, lt.size(lista2), num_lobos, num_arcos, lista_final
 
-    return dist_ori, dist_des, costo, num_nodos + 1, num_lobos, num_arcos, lista_final
-    
+def crear_datos_req4(grafo, vertex):
+    iden, lon, lat= obtener_identificador_lon_lat(vertex)
+    lon, lat= convertir_lon_lat(lon, lat)
+    individual_id= ""
+    if iden== 0:
+            lista= gr.adjacents(grafo, vertex)
+            
+            for data in lt.iterator(lista):
+                iden2, lon2, lon2 = obtener_identificador_lon_lat(data)
+                individual_id= individual_id+","+ iden2
+            individual_id= individual_id.strip(",")
+    else:
+        
+        individual_id= iden
+    individual_count= individual_id.split(",")
+    individual_count=len(individual_count)
+    return lon, lat, vertex, individual_id, individual_count
+
 def req_5(data_structs, puntos, kil, inc):
     """
     Función que soluciona el requerimiento 5
