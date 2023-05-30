@@ -505,6 +505,7 @@ def req_4(data, ori_lon, ori_lat, des_lon, des_lat):
     """
     # TODO: Realizar el requerimiento 4
     lista = lt.newList(datastructure="ARRAY_LIST")
+    lista2 = lt.newList(datastructure="ARRAY_LIST")
     lobos = lt.newList(datastructure="ARRAY_LIST")
     mapa_postions = data["positions"]
     positions = data["encuentros"]
@@ -535,14 +536,21 @@ def req_4(data, ori_lon, ori_lat, des_lon, des_lat):
         num_nodos = st.size(camino)
         for _ in range(num_nodos):
             ele = st.pop(camino)
-            lt.addLast(lista, ele)
-            print(ele)
-            print(mp.get(mapa_postions, ele))
-            print(lista)
-        if num_nodos != 0:
-            num_arcos = num_nodos - 1
-        else:
-            num_arcos = 0 
+            vertice = ele["vertexA"]
+            lt.addLast(lista, vertice)
+        vertice = ele["vertexB"]
+        lt.addLast(lista, vertice)
+        for i in lt.iterator(lista):
+            id, a, b = obtener_identificador_lon_lat(i)
+            if id == 0: 
+                lt.addLast(lista2, i)
+                print(me.getValue(mp.get(mapa_postions, i)))
+            else:
+                if not lt.isPresent(lobos, str(id)):
+                    lt.addLast(lobos, str(id))
+                    print(me.getValue(mp.get(mapa_postions, i)))
+        num_arcos = num_nodos
+
     else:
         costo = "Desconocido"
         num_nodos = "Desconocido"
@@ -550,9 +558,9 @@ def req_4(data, ori_lon, ori_lat, des_lon, des_lat):
         num_arcos = "Desconocido"
 
     lista_final = tres_prim_ult(lista)
-    num_lobos = 0
+    num_lobos = lt.size(lobos)
 
-    return dist_ori, dist_des, costo, num_nodos, num_lobos, num_arcos, lista_final
+    return dist_ori, dist_des, costo, num_nodos + 1, num_lobos, num_arcos, lista_final
     
 def req_5(data_structs, puntos, kil, inc):
     """
