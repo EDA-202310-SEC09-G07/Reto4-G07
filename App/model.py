@@ -429,19 +429,7 @@ def req_1(data_structs, inc, fin):
                     lt.removeLast(lista)
                     lt.addLast(lista, anterior)
             lt.addLast(lista, data)
-        if True:
-            iterator = lt.iterator(lista)
-            ln_i = lt.firstElement(lista)[0][0]
-            lt_i = lt.firstElement(lista)[0][1]
-            m = folium.Map(location=[lt_i, ln_i], zoom_start=12)
-            trail = []
-            for i in iterator:
-                if type(i[1]) != float: 
-                    trail.append([i[0][1], i[0][0]])
-            folium.PolyLine(trail).add_to(m)
-            output_file = "req1.html"
-            m.save(output_file)
-            
+        lista= cinco_prim_ult(lista)
         return lista, size, puntos_en, suma_arc
             
     else: 
@@ -467,6 +455,7 @@ def crear_datos_req1(grafo, vertex):
     
     return lon, lat, vertex, individual_id, individual_count
            
+
 
 def req_2(data_structs, inc, fin):
     """
@@ -565,7 +554,7 @@ def datos_kosaraju(control,idscc,IDkeys):
     keymanada = mp.keySet(infoManadas)
     respuesta = lt.newList(datastructure="ARRAY_LIST")
     for key in lt.iterator(keymanada):
-        lt.addLast(respuesta, mp.get(infomanadas,key))
+        lt.addLast(respuesta, mp.get(infoManadas,key))
     
     return infoManadas
         
@@ -797,6 +786,31 @@ def req_6(control, inc, fin, gen):
     wolf_may= me.getValue(wolf_may)
     nodos_may= lt.size(lista_may)
     nodos_men= lt.size(lista_men)
+    if True: 
+        iterator = lt.iterator(lista_may)
+        _, ln_i1, lt_i1 = obtener_identificador_lon_lat(crear_identificador(lt.firstElement(lista_may)))
+        ln_i1, lt_i1 = convertir_lon_lat(ln_i1, lt_i1)
+        m = folium.Map(location=[lt_i1, ln_i1], zoom_start=12)
+        trail = []
+        for i in iterator:
+            _, i_ln1, i_lt1 = obtener_identificador_lon_lat(crear_identificador(i))
+            i_ln1, i_lt1 = convertir_lon_lat(i_ln1, i_lt1)
+            trail.append([i_lt1, i_ln1])
+        folium.PolyLine(trail, color = "red").add_to(m)
+        iterator = lt.iterator(lista_men)
+        _, ln_i1, lt_i1 = obtener_identificador_lon_lat(crear_identificador(lt.firstElement(lista_men)))
+        ln_i1, lt_i1 = convertir_lon_lat(ln_i1, lt_i1)
+        trail = []
+        for i in iterator:
+            _, i_ln1, i_lt1 = obtener_identificador_lon_lat(crear_identificador(i))
+            i_ln1, i_lt1 = convertir_lon_lat(i_ln1, i_lt1)
+            trail.append([i_lt1, i_ln1])
+        folium.PolyLine(trail, color = "blue").add_to(m)
+    
+    
+    output_file = "req6.html"
+    m.save(output_file)
+
     lista_may= tres_prim_ult(lista_may)
     lista_men= tres_prim_ult(lista_men)
     
