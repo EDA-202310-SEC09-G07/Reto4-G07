@@ -607,13 +607,27 @@ def req_3(control):
     values_puntos = mp.valueSet(mapa_scc)
     lista_final=[]
     for lista in lt.iterator(values_puntos):
-        lista=[]
+        lista2=[]
         for punto in lt.iterator(lista):
-            lista.append(punto)
-            
-        lista_final.append(lista)
-        
-    
+            lista2.append(punto) 
+        lista_final.append(lista2)
+
+    if req8_bool:
+        colores = ['lightblue', 'gray', 'darkpurple', 'red', 'darkgreen', 'darkred', 'green', 'black', 'lightgreen', 'blue', 'white', 'orange', 'pink', 'lightred', 'beige', 'purple']
+        _, loni, lati = obtener_identificador_lon_lat(lista_final[0][0])
+        loni, lati= convertir_lon_lat(loni, lati)
+        m = folium.Map(location=[lati, loni], zoom_start=11)
+        a = 0
+        for manada in lista_final:
+            for i in manada:
+                _, lon, lat = obtener_identificador_lon_lat(i)
+                lon, lat= convertir_lon_lat(lon, lat)
+                if a < len(colores) - 1:
+                    folium.Marker([lat, lon], icon=folium.Icon(color=colores[a])).add_to(m)       
+            if a < len(colores) - 1:
+                a += 1
+        output_file = "req3.html"
+        m.save(output_file)    
     return scc.connectedComponents(KosarajuData), lista_final2
         
 
