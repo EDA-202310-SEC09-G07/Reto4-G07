@@ -1096,7 +1096,7 @@ def req_7(control, inc, fin, tem_min, tem_max):
         lt.addLast(lista_final, mapa)
         
     lista_final=sort(lista_final, 5)
-    
+    lista_8= lista_final
     lista_final= tres_prim_ult(lista_final)
     lista_final2=lt.newList(datastructure="ARRAY_LIST")
     for mapa in lt.iterator(lista_final):
@@ -1119,6 +1119,17 @@ def req_7(control, inc, fin, tem_min, tem_max):
         puntos= crear_str_puntos(lista)
         mp.put(mapa, "nodesid", puntos)
         lt.addLast(lista_final2, mapa)
+        
+    # lista req 8
+    
+    lista_final=[]
+    for mapa in lt.iterator(lista_8):
+        lista2=[]
+        lista_puntos=mp.get(mapa, "valores")
+        lista_puntos= me.getValue(lista_puntos)
+        for punto in lt.iterator(lista_puntos):
+            lista2.append(punto) 
+        lista_final.append(lista2)
     
     return gr.numVertices(grafo), gr.numEdges(grafo), scc.connectedComponents(search), lista_final2
     
