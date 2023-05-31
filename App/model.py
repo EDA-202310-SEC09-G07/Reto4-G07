@@ -528,50 +528,69 @@ def req_3(control):
     #se ejecuta kosaraju y se almacena los IDSCC o los identificadores de las manadas
     KosarajuData = scc.KosarajuSCC(control['moves']) 
     idscc = KosarajuData['idscc']
-    IDkeys = mp.keySet(idscc)
-    respuesta= datos_kosaraju(control,idscc,IDkeys)
-    return respuesta
-  
-    
-def datos_kosaraju(control,idscc,IDkeys):
-    """funcion para cargar y organizar los datos generados por el alogritmo de KosarajuSCC
-
-    Args:
-        control: el modelo
-        idscc: tabla con las idscc generadas por el alogritmo de kosaraju
-        IDkeys: La llaves de la tabla idscc
-    """
-    print(IDkeys)
-    infoManadas = mp.newMap(maptype="PROBING")
-    for IDkey in lt.iterator(IDkeys):
-        manada = mp.get(idscc,IDkey)
-        lon= getLongitud(IDkey)
-        lat= getLatitud(IDkey)
-        
-        if not mp.contains(infoManadas, manada):
-            info = mp.newMap(maptype="PROBING")
-            nodeIds = lt.newList(datastructure="ARRAY_LIST")
-            Wolfs = lt.newList(datastructure="ARRAY_LIST")
-            wolfDetails = lt.newList(datastructure="ARRAY_LIST")
-            info = infoManada(control, info, nodeIds, wolfDetails, lat, lat, lon, lon, IDkey, Wolfs)  
-            mp.put(infoManadas, manada, info)
+    keys= mp.keySet(idscc)
+    #crea un mapa cuyas llaves son los sccid y los valores son una lista con todos los puntos de ese id
+    mapa_scc=mp.newMap(200,
+                                        maptype='PROBING',
+                                        loadfactor=0.5,
+                                        cmpfunction=compare_map)
+    lista_puntos=lista_eventos=lt.newList(datastructure="ARRAY_LIST")
+    for punto in lt.iterator(keys):
+        entry=mp.get(idscc, punto)
+        sccid= me.getValue(entry)
+        if mp.contains(mapa_scc, sccid):
+            entry= mp.get(mapa_scc, sccid)
+            lista= me.getValue(entry)
+            lt.addLast(lista, punto)
+            mp.put(mapa_scc, sccid, lista)
+            
         else:
-            info = mp.get(infoManadas, manada)['value']
-            nodeIds = mp.get(info, "Nodes Ids")['value']
-            Wolfs = mp.get(info, "Wolfs")['value']
-            wolfDetails = mp.get(info, "Wolfs Details")['value']
-            min_lat = min(float(mp.get(info, "min-lat")['value']), lat)
-            max_lat = max(float(mp.get(info, "max-lat")['value']), lat)
-            min_long = min(float(mp.get(info, "min-long")['value']), lon)
-            max_long = max(float(mp.get(info, "max-long")['value']), lon)
-            info = infoManada(control, info, nodeIds,wolfDetails,min_lat, max_lat, min_long, max_long, IDkey, Wolfs)
+            lista_puntos=lista_eventos=lt.newList(datastructure="ARRAY_LIST")
+            lt.addLast(lista_puntos, punto)
+            mp.put(mapa_scc, sccid, lista_puntos)
+            
+    lista_final=lt.newList(datastructure="ARRAY_LIST")
+    mapa=mp.newMap(200,
+                                        maptype='PROBING',
+                                        loadfactor=0.5,
+                                        cmpfunction=compare_map)
     
-    keymanada = mp.keySet(infoManadas)
-    respuesta = lt.newList(datastructure="ARRAY_LIST")
-    for key in lt.iterator(keymanada):
-        lt.addLast(respuesta, mp.get(infoManadas,key))
+    keys= mp.keySet(mapa_scc)
     
-    return respuesta
+    for iden in lt.iterator(keys):
+        mapa=mp.newMap(20,
+                                        maptype='PROBING',
+                                        loadfactor=0.5,
+                                        cmpfunction=compare_map)
+        lista= mp.get(mapa_scc, iden)
+        lista= me.getValue(lista)
+        mp.put(mapa, "sccid", iden)
+        mp.put(mapa, "sccsize", lt.size(lista))
+        mp.put(mapa, "valores", lista)
+        lt.addLast(lista_final, mapa)
+        
+    lista_final=sort(lista_final, 5)
+    
+    lista_final= tres_prim_ult(lista_final)
+    lista_final2=lt.newList(datastructure="ARRAY_LIST")
+    for mapa in lt.iterator(lista_final):
+        lista= mp.get(mapa, "valores")
+        lista= me.getValue(lista)
+        lista=sort(lista, 2)
+        minlon, maxlon= obtener_max_min_lon(lista)
+        mp.put(mapa, "max-lon", maxlon)
+        mp.put(mapa, "min-lon", minlon)
+        num_wolf, wolfs= obtener_num_lobos(control["wolfs"], lista)
+        mp.put(mapa, "wolfdetails", wolfs)
+        mp.put(mapa, "wolfcount", num_wolf)
+        minlat, maxlat= obtener_max_min_lat(lista)
+        mp.put(mapa, "max-lat", maxlat)
+        mp.put(mapa, "min-lat", minlat)
+        puntos= crear_str_puntos(lista)
+        mp.put(mapa, "nodesid", puntos)
+        lt.addLast(lista_final2, mapa)
+    
+    return scc.connectedComponents(KosarajuData), lista_final2
         
 
 

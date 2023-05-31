@@ -249,10 +249,11 @@ def print_req_3(control):
     """
     # TODO: Imprimir el resultado del requerimiento 3
     print("calculando los territorios de los lobos con componentes fuertemente conectados")
-    valor= controller.req_3(control)
-    print(valor)
-    print(valor["value"])
-    print("llegue al final xd")
+    sccs, lista_final= controller.req_3(control)
+    lista1= crear_lista_req_7(lista_final)
+    header = lista1[0].keys()
+    rows =  [x.values() for x in lista1]
+    print(tabulate.tabulate(rows,header,tablefmt="grid",maxcolwidths= [8,8,8,8,8,8,8,8,23]))
     #lista_eventos= crear_lista_req4(valor)
     #header = lista_eventos[0].keys()
     #rows =  [x.values() for x in lista_eventos]
