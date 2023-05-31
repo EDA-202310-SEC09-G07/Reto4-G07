@@ -470,11 +470,22 @@ def print_req_7(control):
         Función que imprime la solución del Requerimiento 7 en consola
     """
     # TODO: Imprimir el resultado del requerimiento 7
+    print("============= Req No. 7 Inputs =================\n")
     inc= input("Ingrese la fecha inicial: ")
     fin= input("Ingrese la fecha final: ")
     tep_min= input("Ingrese la temperatura mínima: ")
     tep_max= input("Ingrese la temperatura máxima: ")
+    print("======== Creando un nuevo grafo =================\n")
+    print("++ Detalles dinales del grafo dirigido ++")
     vertices, arcos, sccs, lista_final= controller.req_7(control, inc, fin, tep_min, tep_max)
+    print("     -  -Digraph Nodes: ", vertices)
+    print("     -  -Digraph Nodes: ", arcos)
+    
+    print("============== Req No. 7 Answer ============\n\n")
+    print("Wolf pack territory details according to SCC....")
+    print("there are ",str(sccs)," Strongly Connected components (SCC) in the graph\n")
+    print("++ The SCC details are: +++")
+    print("los 3 primeros, y 3 ultimos en el rango son: ")
     size= [5]
     lista1= crear_lista_req_7(lista_final)
     header = lista1[0].keys()
