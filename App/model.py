@@ -565,7 +565,7 @@ def datos_kosaraju(control,idscc,IDkeys):
     keymanada = mp.keySet(infoManadas)
     respuesta = lt.newList(datastructure="ARRAY_LIST")
     for key in lt.iterator(keymanada):
-        lt.addLast(respuesta, mp.get(infomanadas,key)
+        lt.addLast(respuesta, mp.get(infomanadas,key))
     
     return infoManadas
         
