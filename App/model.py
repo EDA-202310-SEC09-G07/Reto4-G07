@@ -1186,7 +1186,7 @@ def crear_grafo_manadas(lista):
         
         if anterior is not None and individual_id == anterior["individual-local-identifier"] + "_" + anterior["tag-local-identifier"]:
             punto_ant = crear_identificador(anterior)
-            if gr.getEdge(grafo, punto_ant, punto)== None:
+            if gr.getEdge(grafo, punto_ant, punto)== None and (punto_ant != punto):
                 lon1 = round(float(anterior["location-long"]), 3)
                 lat1 = round(float(anterior["location-lat"]), 3)
                 lon2 = round(float(evento["location-long"]), 3)
