@@ -526,7 +526,7 @@ def req_3(control):
     KosarajuData = scc.KosarajuSCC(control['moves']) 
     idscc = KosarajuData['idscc']
     IDkeys = mp.keySet(idscc)
-    respuesta= datos_kosaraju(control,idscc,KosarajuData)
+    respuesta= datos_kosaraju(control,idscc,IDkeys)
     return respuesta
   
     
@@ -540,7 +540,7 @@ def datos_kosaraju(control,idscc,IDkeys):
     """
     infoManadas = mp.newMap(maptype="PROBING")
     for IDkey in lt.iterator(IDkeys):
-        manada = mp.get(idscc,IDkey)
+        manada = mp.get(idscc,IDkey)['value']
         lon= getLongitud(IDkey)
         lat= getLatitud(IDkey)
         
@@ -564,7 +564,7 @@ def datos_kosaraju(control,idscc,IDkeys):
     
     return infoManadas
         
-
+    
 
 def req_4(data, ori_lon, ori_lat, des_lon, des_lat):
     """
@@ -577,7 +577,6 @@ def req_4(data, ori_lon, ori_lat, des_lon, des_lat):
     lobos = lt.newList(datastructure="ARRAY_LIST")
     lista_mapa = lt.newList(datastructure="ARRAY_LIST")
     lista_enc = lt.newList(datastructure="ARRAY_LIST")
-    mapa_postions = data["positions"]
     positions = data["encuentros"]
     lista_positions= mp.keySet(positions)
     p1 = lt.firstElement(lista_positions)
@@ -1050,20 +1049,21 @@ def req_8(data_structs):
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 
-def infoManada(control, info, nodeIds, wolfDetails, min_lat, max_lat, min_long, max_long, point, Wolfs):
+def infoManada(control, info, nodeIds, wolfDetails, min_lat, max_lat, min_lon, max_lon,ID, Wolfs):
     """"
     Actualiza los campos de información de una manada
     """
-    lt.addLast(nodeIds, point)
+    lt.addLast(nodeIds, ID)
     mp.put(info, "Nodes Ids", nodeIds)
     mp.put(info, "SCC Size", lt.size(nodeIds))
     mp.put(info, "min-lat", min_lat)
     mp.put(info, "max-lat", max_lat)
-    mp.put(info, "min-long", min_long)
-    mp.put(info, "max-long", max_long)
-    if (mp.contains(control['locations'], point)):
-        individualId = mp.get(control['locations'], point)['value']
-        individualId = individualId['individual-id']
+    mp.put(info, "min-long", min_lon)
+    mp.put(info, "max-long", max_lon)
+    if (mp.contains(control['positions'], ID)):
+        lista_positions= mp.keySet(control["positions"])
+        p1 = lt.firstElement(lista_positions)
+        individualId, _, _ = obtener_identificador_lon_lat(p1)
         if (mp.contains(control["wolfs"], individualId)) and (not lt.isPresent(Wolfs, individualId)):
             lt.addLast(wolfDetails, getWolfsDetails(control, individualId)) 
             lt.addLast(Wolfs, individualId)
