@@ -605,7 +605,6 @@ def req_3(control):
         
     # Lista Req 8
     values_puntos = mp.valueSet(mapa_scc)
-    values_puntos =me.getValue(values_puntos)
     lista_final=[]
     for lista in lt.iterator(values_puntos):
         lista=[]
