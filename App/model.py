@@ -615,7 +615,6 @@ def req_3(control):
         lista_final.append(lista)
         
     
-    
     return scc.connectedComponents(KosarajuData), lista_final2
         
 
