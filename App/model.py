@@ -529,7 +529,7 @@ def req_3(control):
     KosarajuData = scc.KosarajuSCC(control['moves']) 
     idscc = KosarajuData['idscc']
     IDkeys = mp.keySet(idscc)
-    respuesta= datos_kosaraju(control,idscc,KosarajuData)
+    respuesta= datos_kosaraju(control,idscc,IDkeys)
     return respuesta
   
     
@@ -570,7 +570,7 @@ def datos_kosaraju(control,idscc,IDkeys):
     for key in lt.iterator(keymanada):
         lt.addLast(respuesta, mp.get(infoManadas,key))
     
-    return infoManadas
+    return respuesta
         
 
 
