@@ -807,18 +807,30 @@ def req_6(control, inc, fin, gen):
     nodos_may= lt.size(lista_may)
     nodos_men= lt.size(lista_men)
     if True: 
-        iterator = lt.iterator(lista_mapa)
-        _, ln_i, lt_i = obtener_identificador_lon_lat(lt.firstElement(lista_mapa))
-        ln_i, lt_i = convertir_lon_lat(ln_i, lt_i)
-        m = folium.Map(location=[lt_i, ln_i], zoom_start=12)
+        iterator = lt.iterator(lista_may)
+        _, ln_i1, lt_i1 = obtener_identificador_lon_lat(crear_identificador(lt.firstElement(lista_may)))
+        ln_i1, lt_i1 = convertir_lon_lat(ln_i1, lt_i1)
+        m = folium.Map(location=[lt_i1, ln_i1], zoom_start=12)
         trail = []
         for i in iterator:
-            _, i_ln, i_lt = obtener_identificador_lon_lat(i)
-            i_ln, i_lt = convertir_lon_lat(i_ln, i_lt)
-            trail.append([i_lt, i_ln])
-        folium.PolyLine(trail).add_to(m)
-        output_file = "req5.html"
+            _, i_ln1, i_lt1 = obtener_identificador_lon_lat(crear_identificador(i))
+            i_ln1, i_lt1 = convertir_lon_lat(i_ln1, i_lt1)
+            trail.append([i_lt1, i_ln1])
+        folium.PolyLine(trail, color = "red").add_to(m)
+        iterator = lt.iterator(lista_men)
+        _, ln_i1, lt_i1 = obtener_identificador_lon_lat(crear_identificador(lt.firstElement(lista_men)))
+        ln_i1, lt_i1 = convertir_lon_lat(ln_i1, lt_i1)
+        trail = []
+        for i in iterator:
+            _, i_ln1, i_lt1 = obtener_identificador_lon_lat(crear_identificador(i))
+            i_ln1, i_lt1 = convertir_lon_lat(i_ln1, i_lt1)
+            trail.append([i_lt1, i_ln1])
+        folium.PolyLine(trail, color = "blue").add_to(m)
+    
+    
+    output_file = "req6.html"
     m.save(output_file)
+
     lista_may= tres_prim_ult(lista_may)
     lista_men= tres_prim_ult(lista_men)
     
