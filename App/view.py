@@ -479,7 +479,7 @@ def print_req_7(control):
     print("++ Detalles dinales del grafo dirigido ++")
     vertices, arcos, sccs, lista_final= controller.req_7(control, inc, fin, tep_min, tep_max)
     print("     -  -Digraph Nodes: ", vertices)
-    print("     -  -Digraph Nodes: ", arcos)
+    print("     -  -Digraph edges: ", arcos)
     
     print("============== Req No. 7 Answer ============\n\n")
     print("Wolf pack territory details according to SCC....")
