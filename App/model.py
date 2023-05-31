@@ -583,7 +583,7 @@ def req_3(control):
         lt.addLast(lista_final, mapa)
         
     lista_final=sort(lista_final, 5)
-    
+    lista_8=lista_final
     lista_final= cinco_prim(lista_final)
     lista_final2=lt.newList(datastructure="ARRAY_LIST")
     for mapa in lt.iterator(lista_final):
@@ -606,11 +606,13 @@ def req_3(control):
     # Lista Req 8
     values_puntos = mp.valueSet(mapa_scc)
     lista_final=[]
-    for lista in lt.iterator(values_puntos):
+    for mapa in lt.iterator(lista_8):
         lista2=[]
-        for punto in lt.iterator(lista):
+        lista_puntos=mp.get(mapa, "valores")
+        lista_puntos= me.getValue(lista_puntos)
+        for punto in lt.iterator(lista_puntos):
             lista2.append(punto) 
-        lista_final.append(lista2)
+        lista_8.append(lista2)
 
     if req8_bool:
         colores = ['lightblue', 'gray', 'darkpurple', 'red', 'darkgreen', 'darkred', 'green', 'black', 'lightgreen', 'blue', 'white', 'orange', 'pink', 'lightred', 'beige', 'purple']
