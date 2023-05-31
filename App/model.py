@@ -551,6 +551,11 @@ def datos_kosaraju(control,idscc,IDkeys):
             max_long = max(float(mp.get(info, "max-long")['value']), lon)
             info = infoManada(control, info, nodeIds,wolfDetails,min_lat, max_lat, min_long, max_long, IDkey, Wolfs)
     
+    keymanada = mp.keySet(infoManadas)
+    respuesta = lt.newList(datastructure="ARRAY_LIST")
+    for key in lt.iterator(keymanada):
+        lt.addLast(respuesta, mp.get(infomanadas,key)
+    
     return infoManadas
         
 
