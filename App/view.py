@@ -555,50 +555,14 @@ def crear_lista_req_7_2(lista_final):
         lista.append(dicc)
         
     return lista
+
 def print_req_8(control):
     """
         Función que imprime la solución del Requerimiento 8 en consola
     """
-    inputs = input('Seleccione que requerimiento desea ejecutar\n')
-    try:
-        if int(inputs) == 1:
-            print("Cargando información de los archivos ....\n")
-            op = print_menu_cant_datos()
-            filename = menu_cant_datos(op)
-            data = load_data(control, filename)
-        elif int(inputs) == 2:
-            print_req_1(control)
-
-        elif int(inputs) == 3:
-            print_req_2(control)
-
-        elif int(inputs) == 4:
-            print_req_3(control)
-
-        elif int(inputs) == 5:
-            print_req_4(control)
-
-        elif int(inputs) == 6:
-            print_req_5(control)
-
-        elif int(inputs) == 7:
-            print_req_6(control)
-
-        elif int(inputs) == 8:
-            print_req_7(control)
-
-        elif int(inputs) == 9:
-            print_req_8(control)
-
-        elif int(inputs) == 0:
-            working = False
-            print("\nGracias por utilizar el programa")
-            
-        else:
-            print("Opción errónea, vuelva a elegir.\n")
-    except Exception as exp:
-        print("ERR:", exp)
-        traceback.print_exc()
+    bol = input("Desea mostrar gráficas (t/f): ")
+    bol = controller.req_8(bol)
+    print(bol)
 
 # Se crea el controlador asociado a la vista
 control = new_controller()

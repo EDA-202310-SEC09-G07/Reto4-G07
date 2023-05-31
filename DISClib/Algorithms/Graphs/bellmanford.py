@@ -87,21 +87,21 @@ def relax(graph, search, v):
                 distv = map.get(search['distTo'], v)['value']
                 distw = map.get(search['distTo'], w)['value']
                 distweight = distv + e.weight(edge)
-                if (distw > distweight):
+                if distw > distweight:
                     map.put(search['distTo'], w, distweight)
                     map.put(search['edgeTo'], w, edge)
-                    if (not map.get(search['onQ'], w)['value']):
+                    if not map.get(search['onQ'], w)['value']:
                         q.enqueue(search['qvertex'], w)
                         map.put(search['onQ'], w, True)
-                cost = search['cost']
-                if ((cost % g.numVertices(graph)) == 0):
-                    findneg = findNegativeCycle(graph, search)
-                    if (hasNegativecycle(findneg)):
-                        return
-                search['cost'] = cost + 1
+            search['cost'] += 1
+            if search['cost'] % g.numVertices(graph) == 0:
+                findneg = findNegativeCycle(graph, search)
+                if hasNegativecycle(findneg):
+                    return search
         return search
     except Exception as exp:
         error.reraise(exp, 'bellman:relax')
+
 
 
 def distTo(search, vertex):

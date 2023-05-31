@@ -57,8 +57,6 @@ dos listas, una para los videos, otra para las categorias de los mismos.
 
 # Construccion de modelos
 
-req8_bool = True
-
 def new_list():
     lista= lt.newList(datastructure="ARRAY_LIST")
     return lista
@@ -749,12 +747,12 @@ def req_5(data_structs, puntos, kil, inc):
     mapa_postions= data_structs["positions"]
     lista_positions= mp.keySet(mapa_postions)
     kil= (float(kil)/2)
-    recorridos= bf.BellmanFord(grafo, inc)
+    recorridos= djk.Dijkstra(grafo, inc)
     encuentros=om.newMap("BST",
                       compare_arbol_caso)
     for encuentro in lt.iterator(lista_positions):
         
-        costo=bf.distTo(recorridos, encuentro)
+        costo=djk.distTo(recorridos, encuentro)
         if costo<= kil:
             om.put(encuentros, costo, encuentro)
             
@@ -812,7 +810,7 @@ def obtener_recorrido_max(recorridos, mapa, valor):
         distancia_max= om.maxKey(mapa)
         entry= om.get(mapa, distancia_max)
         value= me.getValue(entry)
-        path= bf.pathTo(recorridos, value)
+        path= djk.pathTo(recorridos, value)
         puntos= st.size(path)
         if puntos>= int(valor):
             return path, distancia_max, puntos
@@ -820,7 +818,15 @@ def obtener_recorrido_max(recorridos, mapa, valor):
             om.deleteMax(mapa)
         lt.removeLast(lista)
     return False
-            
+
+def contar_puntos_encuentros(path):
+    puntos_en=0
+    while not st.isEmpty(path):
+            vertex = st.pop(path)
+            txt= vertex.split("_")
+            if len(txt)==2:
+                puntos_en+=1
+    return puntos_en
     
 
 def req_6(control, inc, fin, gen):
@@ -1120,7 +1126,7 @@ def req_7(control, inc, fin, tem_min, tem_max):
         mp.put(mapa, "nodesid", puntos)
         lt.addLast(lista_final2, mapa)
         
-    # lista req 8
+    # TODO lista req 8
     
     lista_final=[]
     for mapa in lt.iterator(lista_8):
@@ -1130,6 +1136,22 @@ def req_7(control, inc, fin, tem_min, tem_max):
         for punto in lt.iterator(lista_puntos):
             lista2.append(punto) 
         lista_final.append(lista2)
+    if req8_bool:
+        colores = ['lightblue', 'gray', 'darkpurple', 'red', 'darkgreen', 'darkred', 'green', 'black', 'lightgreen', 'blue', 'white', 'orange', 'pink', 'lightred', 'beige', 'purple']
+        _, loni, lati = obtener_identificador_lon_lat(lista_final[0][0])
+        loni, lati= convertir_lon_lat(loni, lati)
+        m = folium.Map(location=[lati, loni], zoom_start=11)
+        a = 0
+        for manada in lista_final:
+            for i in manada:
+                _, lon, lat = obtener_identificador_lon_lat(i)
+                lon, lat= convertir_lon_lat(lon, lat)
+                if a < len(colores) - 1:
+                    folium.Marker([lat, lon], icon=folium.Icon(color=colores[a])).add_to(m)       
+            if a < len(colores) - 1:
+                a += 1
+        output_file = "req7.html"
+        m.save(output_file)   
     
     return gr.numVertices(grafo), gr.numEdges(grafo), scc.connectedComponents(search), lista_final2
     
@@ -1265,12 +1287,16 @@ def crear_grafo_manadas(lista):
     return grafo
         
 
-def req_8(data_structs):
+def req_8(bol):
     """
     Función que soluciona el requerimiento 8
     """
-    # TODO: Realizar el requerimiento 8
-    pass
+    global req8_bool
+    if bol == "t":
+        req8_bool = True
+    if bol == "f":
+        req8_bool = False
+    return req8_bool
 
 
 # Funciones utilizadas para comparar elementos dentro de una lista
