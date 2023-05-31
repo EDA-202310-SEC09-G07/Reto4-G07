@@ -124,9 +124,11 @@ def req_1(control, inc, fin):
     """
     Retorna el resultado del requerimiento 1
     """
-
+    start = get_time()
     valor= model.req_1(control["moves"], inc, fin)
-    
+    end= get_time()
+    deltatime = delta_time(start, end)
+    print(deltatime)
     return valor
 
 
@@ -134,13 +136,24 @@ def req_2(control, inc, fin):
     """
     Retorna el resultado del requerimiento 2
     """
+    start = get_time()
     valor= model.req_2(control["moves"], inc, fin)
     if valor!= False:
         lista, size, puntos_en, suma_arc= valor
         lista= model.cinco_prim_ult(lista)
         valor= lista, size, puntos_en, suma_arc
+        end= get_time()
+        deltatime = delta_time(start, end)
+        print(deltatime)
         return valor
+        return valor
+    
+    
     else:
+        end= get_time()
+        deltatime = delta_time(start, end)
+        print(deltatime)
+        return valor
         return False
 
 
@@ -149,7 +162,11 @@ def req_3(control):
     Retorna el resultado del requerimiento 3
     """
     # TODO: Modificar el requerimiento 3
+    start = get_time()
     valor= model.req_3(control)
+    end= get_time()
+    deltatime = delta_time(start, end)
+    print(deltatime)
     return valor
 
 
@@ -157,7 +174,11 @@ def req_4(data, ori_lon, ori_lat, des_lon, des_lat):
     """
     Retorna el resultado del requerimiento 4
     """
+    start = get_time()
     dist_ori, dist_des, costo, num_nodos, num_lobos, num_arcos, lista_final = model.req_4(data, float(ori_lon), float(ori_lat), float(des_lon), float(des_lat))
+    end= get_time()
+    deltatime = delta_time(start, end)
+    print(deltatime)
     return dist_ori, dist_des, costo, num_nodos, num_lobos, num_arcos, lista_final
 
 
@@ -166,17 +187,28 @@ def req_5(control, puntos, kil, inc):
     Retorna el resultado del requerimiento 5
     """
     # TODO: Modificar el requerimiento 5
+    start = get_time()
     valor= model.req_5(control, puntos, kil, inc)
     if valor!= False:
+        end= get_time()
+        deltatime = delta_time(start, end)
+        print(deltatime)
         return valor
     else:
+        end= get_time()
+        deltatime = delta_time(start, end)
+        print(deltatime)
         return False
 
 def req_6(control, inc, fin, gen):
     """
     Retorna el resultado del requerimiento 6
     """
+    start = get_time()
     valor= model.req_6(control, inc, fin, gen)
+    end= get_time()
+    deltatime = delta_time(start, end)
+    print(deltatime)
     return valor
 
 
@@ -184,7 +216,11 @@ def req_7(control, inc, fin, tem_min, tem_max):
     """
     Retorna el resultado del requerimiento 7
     """
+    start = get_time()
     value= model.req_7(control, inc, fin, tem_min, tem_max)
+    end= get_time()
+    deltatime = delta_time(start, end)
+    print(deltatime)
     return value
 
 
