@@ -224,12 +224,12 @@ def req_7(control, inc, fin, tem_min, tem_max):
     return value
 
 
-def req_8(control):
+def req_8(bol):
     """
     Retorna el resultado del requerimiento 8
     """
-    # TODO: Modificar el requerimiento 8
-    pass
+    bol = model.req_8(bol)
+    return bol
 
 
 # Funciones para medir tiempos de ejecucion

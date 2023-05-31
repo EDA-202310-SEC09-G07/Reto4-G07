@@ -57,8 +57,6 @@ dos listas, una para los videos, otra para las categorias de los mismos.
 
 # Construccion de modelos
 
-req8_bool = True
-
 def new_list():
     lista= lt.newList(datastructure="ARRAY_LIST")
     return lista
@@ -1281,12 +1279,16 @@ def crear_grafo_manadas(lista):
     return grafo
         
 
-def req_8(data_structs):
+def req_8(bol):
     """
     Función que soluciona el requerimiento 8
     """
-    # TODO: Realizar el requerimiento 8
-    pass
+    global req8_bool
+    if bol == "t":
+        req8_bool = True
+    if bol == "f":
+        req8_bool = False
+    return req8_bool
 
 
 # Funciones utilizadas para comparar elementos dentro de una lista
