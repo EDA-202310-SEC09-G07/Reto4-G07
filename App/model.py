@@ -1120,7 +1120,7 @@ def req_7(control, inc, fin, tem_min, tem_max):
         mp.put(mapa, "nodesid", puntos)
         lt.addLast(lista_final2, mapa)
         
-    # lista req 8
+    # TODO lista req 8
     
     lista_final=[]
     for mapa in lt.iterator(lista_8):
@@ -1130,6 +1130,22 @@ def req_7(control, inc, fin, tem_min, tem_max):
         for punto in lt.iterator(lista_puntos):
             lista2.append(punto) 
         lista_final.append(lista2)
+    if req8_bool:
+        colores = ['lightblue', 'gray', 'darkpurple', 'red', 'darkgreen', 'darkred', 'green', 'black', 'lightgreen', 'blue', 'white', 'orange', 'pink', 'lightred', 'beige', 'purple']
+        _, loni, lati = obtener_identificador_lon_lat(lista_final[0][0])
+        loni, lati= convertir_lon_lat(loni, lati)
+        m = folium.Map(location=[lati, loni], zoom_start=11)
+        a = 0
+        for manada in lista_final:
+            for i in manada:
+                _, lon, lat = obtener_identificador_lon_lat(i)
+                lon, lat= convertir_lon_lat(lon, lat)
+                if a < len(colores) - 1:
+                    folium.Marker([lat, lon], icon=folium.Icon(color=colores[a])).add_to(m)       
+            if a < len(colores) - 1:
+                a += 1
+        output_file = "req7.html"
+        m.save(output_file)   
     
     return gr.numVertices(grafo), gr.numEdges(grafo), scc.connectedComponents(search), lista_final2
     
