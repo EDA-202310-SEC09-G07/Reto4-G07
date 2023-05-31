@@ -602,6 +602,19 @@ def req_3(control):
         puntos= crear_str_puntos(lista)
         mp.put(mapa, "nodesid", puntos)
         lt.addLast(lista_final2, mapa)
+        
+    # Lista Req 8
+    values_puntos = mp.valueSet(mapa_scc)
+    values_puntos =me.getValue(values_puntos)
+    lista_final=[]
+    for lista in lt.iterator(values_puntos):
+        lista=[]
+        for punto in lt.iterator(lista):
+            lista.append(punto)
+            
+        lista_final.append(lista)
+        
+    
     
     return scc.connectedComponents(KosarajuData), lista_final2
         
