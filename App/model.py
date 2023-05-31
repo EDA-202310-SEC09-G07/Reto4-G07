@@ -518,7 +518,7 @@ def req_3(control):
     idscc = KosarajuData['idscc']
     IDkeys = mp.keySet(idscc)
     respuesta= datos_kosaraju(control,idscc,IDkeys)
-    return respuesta
+    return respuesta, KosarajuData["components"]
   
     
 def datos_kosaraju(control,idscc,IDkeys):
@@ -531,7 +531,7 @@ def datos_kosaraju(control,idscc,IDkeys):
     """
     infoManadas = mp.newMap(maptype="PROBING")
     for IDkey in lt.iterator(IDkeys):
-        manada = mp.get(idscc,IDkey)
+        manada = mp.get(idscc,IDkey)["value"]
         lon= getLongitud(IDkey)
         lat= getLatitud(IDkey)
         
@@ -553,13 +553,71 @@ def datos_kosaraju(control,idscc,IDkeys):
             max_long = max(float(mp.get(info, "max-long")['value']), lon)
             info = infoManada(control, info, nodeIds,wolfDetails,min_lat, max_lat, min_long, max_long, IDkey, Wolfs)
     
-    keymanada = mp.keySet(infoManadas)
-    respuesta = lt.newList(datastructure="ARRAY_LIST")
-    for key in lt.iterator(keymanada):
-        lt.addLast(respuesta, mp.get(infoManadas,key))
+    manadaskeys = mp.keySet(infoManadas)
+    response = lt.newList(datastructure="ARRAY_LIST")
+    for manada in lt.iterator(manadaskeys):
+        lt.addLast(response, newDataManada(infoManadas, manada))
+    sortedResponse = merg.sort(response, cmp_node_in_manadas)
+    return sortedResponse
+
+def cmp_node_in_manadas(dataManada1, dataManada2):
     
-    return respuesta
+    return dataManada1["SCC Size"] > dataManada2["SCC Size"] 
+    
         
+def newDataManada(infoManadas, manada):
+    """ 
+    Da el formato de información de campos requeridos
+    en el requerimiento 3
+    """
+    dataManada = {
+        "SCCID": None,
+        "Nodes Ids": None,
+        "SCC Size": None,
+        "min-lat": None,
+        "max-lat": None,
+        "min-long": None,
+        "max-long": None,
+        "Wolfs Count": None,
+        "Wolfs Details": None
+    }
+    
+    infoManada = mp.get(infoManadas, manada)['value']
+    dataManada["SCCID"] = manada
+    nodes_ids = mp.get(infoManada, "Nodes Ids")['value']
+    size = lt.size(nodes_ids)
+    firstAndLast = lt.newList(datastructure="ARRAY_LIST")
+    i = 1
+    full = False
+    if 3 > size:
+        full = True
+    if full != True:
+        while i <= 3:
+            item = lt.getElement(nodes_ids, i)
+            lt.addLast(firstAndLast, item)
+            i += 1
+        lt.addLast(firstAndLast, "...")
+        i = size - 3 + 1
+        while i <= size:
+            item = lt.getElement(nodes_ids, i)
+            lt.addLast(firstAndLast, item)
+            i += 1
+    elif full == True:
+        for i in range(1,size+1):
+            item = lt.getElement(nodes_ids, i)
+            lt.addLast(firstAndLast, item)
+    nodes_ids = firstAndLast['elements']
+    nodes_ids = str(nodes_ids).replace("[", "").replace("]", "").replace("'", "").replace(",", ",\n")
+    dataManada["Nodes Ids"] = nodes_ids
+    dataManada["SCC Size"] = mp.get(infoManada, "SCC Size")['value']
+    dataManada['min-lat'] = mp.get(infoManada, "min-lat")['value']
+    dataManada['max-lat'] = mp.get(infoManada, "max-lat")['value']
+    dataManada['min-long'] = mp.get(infoManada, "min-long")['value']
+    dataManada['max-long'] = mp.get(infoManada, "max-long")['value']
+    WolfsDetails = mp.get(infoManada, "Wolfs Details")['value']
+    dataManada['Wolfs Details'] = WolfsDetails
+    dataManada['Wolfs Count'] = mp.get(infoManada, "Wolfs Count")['value']
+    return dataManada
 
 
 def req_4(data, ori_lon, ori_lat, des_lon, des_lat):
@@ -1043,20 +1101,21 @@ def req_8(data_structs):
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 
-def infoManada(control, info, nodeIds, wolfDetails, min_lat, max_lat, min_long, max_long, point, Wolfs):
+def infoManada(control, info, nodeIds, wolfDetails, min_lat, max_lat, min_long, max_long, ID, Wolfs):
     """"
     Actualiza los campos de información de una manada
     """
-    lt.addLast(nodeIds, point)
+    lt.addLast(nodeIds, ID)
     mp.put(info, "Nodes Ids", nodeIds)
     mp.put(info, "SCC Size", lt.size(nodeIds))
     mp.put(info, "min-lat", min_lat)
     mp.put(info, "max-lat", max_lat)
     mp.put(info, "min-long", min_long)
     mp.put(info, "max-long", max_long)
-    if (mp.contains(control['locations'], point)):
-        individualId = mp.get(control['locations'], point)['value']
-        individualId = individualId['individual-id']
+    if (mp.contains(control['positions'], ID)):
+        lista_positions= mp.keySet(control["positions"])
+        p1 = lt.firstElement(lista_positions)
+        individualId, _, _ = obtener_identificador_lon_lat(p1)
         if (mp.contains(control["wolfs"], individualId)) and (not lt.isPresent(Wolfs, individualId)):
             lt.addLast(wolfDetails, getWolfsDetails(control, individualId)) 
             lt.addLast(Wolfs, individualId)

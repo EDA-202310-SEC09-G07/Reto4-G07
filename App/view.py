@@ -251,7 +251,10 @@ def print_req_3(control):
     print("calculando los territorios de los lobos con componentes fuertemente conectados")
     valor= controller.req_3(control)
     print(valor)
-    print(valor["value"])
+    valor= valor[0]
+    for i in valor:
+        print(i[0])
+        print("\n================================")
     print("llegue al final xd")
     #lista_eventos= crear_lista_req4(valor)
     #header = lista_eventos[0].keys()
