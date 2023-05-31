@@ -253,7 +253,7 @@ def print_req_3(control):
     lista1= crear_lista_req_7(lista_final)
     header = lista1[0].keys()
     rows =  [x.values() for x in lista1]
-    print(tabulate.tabulate(rows,header,tablefmt="grid",maxcolwidths= [8,8,8,8,8,8,8,8,23]))
+    print(tabulate.tabulate(rows,header,tablefmt="grid",maxcolwidths= [5]))
     #lista_eventos= crear_lista_req4(valor)
     #header = lista_eventos[0].keys()
     #rows =  [x.values() for x in lista_eventos]
@@ -486,7 +486,7 @@ def crear_lista_req_7(lista_final):
     for mapa in lt.iterator(lista_final):
         dicc={
             "SCCID": me.getValue(mp.get(mapa, "sccid")),
-            "Dips Node IDs": me.getValue(mp.get(mapa, "nodesid")),
+            "Dips Node IDs": me.getValue(mp.get(mapa, "nodesid")).replace(",", ",\n"),
             "SCC size": me.getValue(mp.get(mapa, "sccsize")), 
             "min-lat": me.getValue(mp.get(mapa, "min-lat")),
             "max-lat": me.getValue(mp.get(mapa, "max-lat")),
@@ -514,7 +514,7 @@ def crear_tabla_lobos_req_7(wolfs):
         lista.append(dicc)
     header = lista[0].keys()
     rows =  [x.values() for x in lista]
-    tabla= tabulate.tabulate(rows,header,tablefmt="grid",maxcolwidths= 10,maxheadercolwidths=6)
+    tabla= tabulate.tabulate(rows,header,tablefmt="grid",maxcolwidths= [15,15,15,15,40])
     return tabla
 
 
