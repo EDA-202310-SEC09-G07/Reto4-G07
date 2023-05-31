@@ -201,16 +201,17 @@ def print_req_1(control):
 def crear_lista_req1(data_structs):
     lista=[]
     for data in lt.iterator(data_structs):
-        valores= data[0]
-        dicc={
-         "location-log aprox": valores[0],
-         "location-lat aprox": valores[1], 
-         "node-id": valores[2],
-         "individual-id": valores[3],
-         "individual-count": valores[4],   
-         "edge-To": data[1],
-         "edge-distance-km": data[2]
-        }
+        if len(data)==3:
+            valores= data[0]
+            dicc={
+            "location-log aprox": valores[0],
+            "location-lat aprox": valores[1], 
+            "node-id": valores[2],
+            "individual-id": valores[3],
+            "individual-count": valores[4],   
+            "edge-To": data[1],
+            "edge-distance-km": data[2]
+            }
         
         lista.append(dicc)
     
@@ -247,14 +248,7 @@ def print_req_3(control):
         Función que imprime la solución del Requerimiento 3 en consola
     """
     # TODO: Imprimir el resultado del requerimiento 3
-    print("calculando los territorios de los lobos con componentes fuertemente conectados")
-    valor= controller.req_3(control)
-    print(valor["value"])
-    print("llegue al final xd")
-    #lista_eventos= crear_lista_req4(valor)
-    #header = lista_eventos[0].keys()
-    #rows =  [x.values() for x in lista_eventos]
-    #print(tabulate.tabulate(rows,header,tablefmt="grid",maxcolwidths= 10,maxheadercolwidths=6))
+    pass
 
 
 def print_req_4(control):

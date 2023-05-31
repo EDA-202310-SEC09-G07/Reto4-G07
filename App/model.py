@@ -429,19 +429,7 @@ def req_1(data_structs, inc, fin):
                     lt.removeLast(lista)
                     lt.addLast(lista, anterior)
             lt.addLast(lista, data)
-        if True:
-            iterator = lt.iterator(lista)
-            ln_i = lt.firstElement(lista)[0][0]
-            lt_i = lt.firstElement(lista)[0][1]
-            m = folium.Map(location=[lt_i, ln_i], zoom_start=12)
-            trail = []
-            for i in iterator:
-                if type(i[1]) != float: 
-                    trail.append([i[0][1], i[0][0]])
-            folium.PolyLine(trail).add_to(m)
-            output_file = "req1.html"
-            m.save(output_file)
-            
+        lista= cinco_prim_ult(lista)
         return lista, size, puntos_en, suma_arc
             
     else: 
@@ -467,6 +455,7 @@ def crear_datos_req1(grafo, vertex):
     
     return lon, lat, vertex, individual_id, individual_count
            
+
 
 def req_2(data_structs, inc, fin):
     """
