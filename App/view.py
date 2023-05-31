@@ -470,15 +470,16 @@ def print_req_7(control):
     tep_min= input("Ingrese la temperatura mínima: ")
     tep_max= input("Ingrese la temperatura máxima: ")
     vertices, arcos, sccs, lista_final= controller.req_7(control, inc, fin, tep_min, tep_max)
+    size= [11,11,11,11,11,11,None,None]
     lista1= crear_lista_req_7(lista_final)
     header = lista1[0].keys()
     rows =  [x.values() for x in lista1]
-    print(tabulate.tabulate(rows,header,tablefmt="grid",maxcolwidths= 10,maxheadercolwidths=6))
+    print(tabulate.tabulate(rows,header,tablefmt="grid",maxcolwidths= size,maxheadercolwidths=size))
     
     lista2=crear_lista_req_7_2(lista_final)
     header = lista2[0].keys()
     rows =  [x.values() for x in lista2]
-    print(tabulate.tabulate(rows,header,tablefmt="grid",maxcolwidths= 10,maxheadercolwidths=6))
+    print(tabulate.tabulate(rows,header,tablefmt="grid",maxcolwidths= size,maxheadercolwidths=size))
     
 def crear_lista_req_7(lista_final):
     lista=[]

@@ -1086,9 +1086,19 @@ def req_7(control, inc, fin, tem_min, tem_max):
 def crear_str_puntos(lista):
     txt=""
     size=lt.size(lista)
-    if size>1:
+    count=0
+    if size>7:
         for punto in lt.iterator(lista):
-            txt= txt+","+ punto
+            if count <= 3:
+                txt= txt+","+ punto
+            elif count >= size-4:
+                txt= txt+","+ punto
+            elif count ==4:
+                txt= txt+",...,"
+                
+            count+=1
+        
+                
         txt= txt.strip(",")
 
     return txt
