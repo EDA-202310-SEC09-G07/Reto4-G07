@@ -431,6 +431,18 @@ def req_1(data_structs, inc, fin):
                     lt.removeLast(lista)
                     lt.addLast(lista, anterior)
             lt.addLast(lista, data)
+        if req8_bool:
+            iterator = lt.iterator(lista)
+            ln_i = lt.firstElement(lista)[0][0]
+            lt_i = lt.firstElement(lista)[0][1]
+            m = folium.Map(location=[lt_i, ln_i], zoom_start=12)
+            trail = []
+            for i in iterator:
+                if type(i[1]) != float: 
+                    trail.append([i[0][1], i[0][0]])
+            folium.PolyLine(trail).add_to(m)
+            output_file = "req1.html"
+            m.save(output_file)
         lista= cinco_prim_ult(lista)
         return lista, size, puntos_en, suma_arc
             
@@ -691,16 +703,19 @@ def req_5(data_structs, puntos, kil, inc):
         valor= obtener_recorrido_max(recorridos, encuentros, puntos)
         if valor!= False:
             recorrido_mayor, distancia, min_pun= valor
+            lista_mapa = lt.newList(datastructure="ARRAY_LIST")
             lista_vertices=lt.newList(datastructure="ARRAY_LIST")
             lista_animales=lt.newList(datastructure="ARRAY_LIST")
             size= st.size(recorrido_mayor)
+            a = True
             while not st.isEmpty(recorrido_mayor):
-                vertex = st.pop(recorrido_mayor)
-                vertex= vertex["vertexA"]
+                vertex_tot = st.pop(recorrido_mayor)
+                vertex= vertex_tot["vertexA"]
                 lt.addLast(lista_vertices, vertex)
-            
-            
-         
+                if a:
+                    lt.addLast(lista_mapa, vertex_tot["vertexB"])
+                    a = not a
+                lt.addLast(lista_mapa, vertex)
             lista_vertices= sort(lista_vertices, 2)
             lista_ver_2= lista_vertices
             for vertex in lt.iterator(lista_ver_2):
@@ -711,6 +726,19 @@ def req_5(data_structs, puntos, kil, inc):
                     animals=1
                 lt.addLast(lista_animales, animals)
             respuesta= size, distancia, lista_vertices, lista_animales
+            if req8_bool: 
+                iterator = lt.iterator(lista_mapa)
+                _, ln_i, lt_i = obtener_identificador_lon_lat(lt.firstElement(lista_mapa))
+                ln_i, lt_i = convertir_lon_lat(ln_i, lt_i)
+                m = folium.Map(location=[lt_i, ln_i], zoom_start=12)
+                trail = []
+                for i in iterator:
+                    _, i_ln, i_lt = obtener_identificador_lon_lat(i)
+                    i_ln, i_lt = convertir_lon_lat(i_ln, i_lt)
+                    trail.append([i_lt, i_ln])
+                folium.PolyLine(trail).add_to(m)
+                output_file = "req5.html"
+                m.save(output_file)
             return rutas, min_pun, distancia*2, respuesta
         
     else: 
