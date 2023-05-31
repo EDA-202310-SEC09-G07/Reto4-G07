@@ -612,7 +612,7 @@ def req_3(control):
         lista_puntos= me.getValue(lista_puntos)
         for punto in lt.iterator(lista_puntos):
             lista2.append(punto) 
-        lista_8.append(lista2)
+        lista_final.append(lista2)
 
     if req8_bool:
         colores = ['lightblue', 'gray', 'darkpurple', 'red', 'darkgreen', 'darkred', 'green', 'black', 'lightgreen', 'blue', 'white', 'orange', 'pink', 'lightred', 'beige', 'purple']
