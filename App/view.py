@@ -470,7 +470,7 @@ def print_req_7(control):
     tep_min= input("Ingrese la temperatura mínima: ")
     tep_max= input("Ingrese la temperatura máxima: ")
     vertices, arcos, sccs, lista_final= controller.req_7(control, inc, fin, tep_min, tep_max)
-    size= [11,11,11,11,11,11,None,None]
+    size= [5]
     lista1= crear_lista_req_7(lista_final)
     header = lista1[0].keys()
     rows =  [x.values() for x in lista1]
@@ -531,7 +531,7 @@ def crear_lista_req_7_2(lista_final):
             "LP Node Count": me.getValue(mp.get(mapa, "nodes")),
             "LP Edges Count": me.getValue(mp.get(mapa, "edges")),
             "LP distance [km]": me.getValue(mp.get(mapa, "distance")),
-            "Dips Disp details": me.getValue(mp.get(mapa, "nodesid"))
+            "Dips Disp details": me.getValue(mp.get(mapa, "nodesid")).replace(",", ",\n")
             
         }
         lista.append(dicc)
