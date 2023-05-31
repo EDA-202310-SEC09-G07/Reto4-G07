@@ -747,12 +747,12 @@ def req_5(data_structs, puntos, kil, inc):
     mapa_postions= data_structs["positions"]
     lista_positions= mp.keySet(mapa_postions)
     kil= (float(kil)/2)
-    recorridos= bf.BellmanFord(grafo, inc)
+    recorridos= djk.Dijkstra(grafo, inc)
     encuentros=om.newMap("BST",
                       compare_arbol_caso)
     for encuentro in lt.iterator(lista_positions):
         
-        costo=bf.distTo(recorridos, encuentro)
+        costo=djk.distTo(recorridos, encuentro)
         if costo<= kil:
             om.put(encuentros, costo, encuentro)
             
@@ -810,18 +810,23 @@ def obtener_recorrido_max(recorridos, mapa, valor):
         distancia_max= om.maxKey(mapa)
         entry= om.get(mapa, distancia_max)
         value= me.getValue(entry)
-        path= bf.pathTo(recorridos, value)
-        if path != None:
-            puntos= st.size(path)
-            if puntos>= int(valor):
-                return path, distancia_max, puntos
-            else:
-                om.deleteMax(mapa)
-        else: 
+        path= djk.pathTo(recorridos, value)
+        puntos= st.size(path)
+        if puntos>= int(valor):
+            return path, distancia_max, puntos
+        else:
             om.deleteMax(mapa)
         lt.removeLast(lista)
     return False
-    
+
+def contar_puntos_encuentros(path):
+    puntos_en=0
+    while not st.isEmpty(path):
+            vertex = st.pop(path)
+            txt= vertex.split("_")
+            if len(txt)==2:
+                puntos_en+=1
+    return puntos_en
     
 
 def req_6(control, inc, fin, gen):
