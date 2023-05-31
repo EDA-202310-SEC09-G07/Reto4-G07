@@ -57,6 +57,8 @@ dos listas, una para los videos, otra para las categorias de los mismos.
 
 # Construccion de modelos
 
+req8_bool = True
+
 def new_list():
     lista= lt.newList(datastructure="ARRAY_LIST")
     return lista
@@ -488,7 +490,7 @@ def req_2(data_structs, inc, fin):
                     lt.removeLast(lista)
                     lt.addLast(lista, anterior)
             lt.addLast(lista, data)
-        if True:
+        if req8_bool:
             iterator = lt.iterator(lista)
             ln_i = lt.firstElement(lista)[0][0]
             lt_i = lt.firstElement(lista)[0][1]
@@ -625,7 +627,7 @@ def req_4(data, ori_lon, ori_lat, des_lon, des_lat):
             dato.append(dist_nxt)
             lt.addLast(lista2, dato)
 
-        if True:
+        if req8_bool:
             iterator = lt.iterator(lista_mapa)
             ln_i = lt.firstElement(lista_mapa)[0]
             lt_i = lt.firstElement(lista_mapa)[1]
@@ -786,7 +788,7 @@ def req_6(control, inc, fin, gen):
     wolf_may= me.getValue(wolf_may)
     nodos_may= lt.size(lista_may)
     nodos_men= lt.size(lista_men)
-    if True: 
+    if req8_bool: 
         iterator = lt.iterator(lista_may)
         _, ln_i1, lt_i1 = obtener_identificador_lon_lat(crear_identificador(lt.firstElement(lista_may)))
         ln_i1, lt_i1 = convertir_lon_lat(ln_i1, lt_i1)
