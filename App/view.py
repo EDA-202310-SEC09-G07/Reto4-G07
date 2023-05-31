@@ -468,9 +468,73 @@ def print_req_7(control):
     fin= input("Ingrese la fecha final: ")
     tep_min= input("Ingrese la temperatura mínima: ")
     tep_max= input("Ingrese la temperatura máxima: ")
-    valor= controller.req_7(control, inc, fin, tep_min, tep_max)
+    vertices, arcos, sccs, lista_final= controller.req_7(control, inc, fin, tep_min, tep_max)
+    lista1= crear_lista_req_7(lista_final)
+    header = lista1[0].keys()
+    rows =  [x.values() for x in lista1]
+    print(tabulate.tabulate(rows,header,tablefmt="grid",maxcolwidths= 10,maxheadercolwidths=6))
+    
+    lista2=crear_lista_req_7_2(lista_final)
+    header = lista2[0].keys()
+    rows =  [x.values() for x in lista2]
+    print(tabulate.tabulate(rows,header,tablefmt="grid",maxcolwidths= 10,maxheadercolwidths=6))
+    
+def crear_lista_req_7(lista_final):
+    lista=[]
+    for mapa in lt.iterator(lista_final):
+        dicc={
+            "SCCID": me.getValue(mp.get(mapa, "sccid")),
+            "Dips Node IDs": me.getValue(mp.get(mapa, "nodesid")),
+            "SCC size": me.getValue(mp.get(mapa, "sccsize")), 
+            "min-lat": me.getValue(mp.get(mapa, "min-lat")),
+            "max-lat": me.getValue(mp.get(mapa, "max-lat")),
+            "min-lon": me.getValue(mp.get(mapa, "min-lon")),
+            "max-lon": me.getValue(mp.get(mapa, "max-lon")),
+            "Wolf Count": me.getValue(mp.get(mapa, "wolfcount")),
+            "Wolf Details": crear_tabla_lobos_req_7(me.getValue(mp.get(mapa, "wolfdetails")))
+            
+        }
+        lista.append(dicc)
+        
+    return lista
+
+def crear_tabla_lobos_req_7(wolfs):
+    lista=[]
+    for wolf in lt.iterator(wolfs):
+        dicc={
+            "individual-id": wolf["animal-id"]+"_"+wolf["tag-id"],
+            "animal sex": wolf["animal-sex"],
+            "animal-life-stage": wolf["animal-life-stage"],
+            "study-site": wolf["study-site"],
+            "deployment-comments": wolf["deployment-comments"]
+        }
+        
+        lista.append(dicc)
+    header = lista[0].keys()
+    rows =  [x.values() for x in lista]
+    tabla= tabulate.tabulate(rows,header,tablefmt="grid",maxcolwidths= 10,maxheadercolwidths=6)
+    return tabla
 
 
+def crear_lista_req_7_2(lista_final):
+    lista=[]
+    for mapa in lt.iterator(lista_final):
+        dicc={
+            "SCCID": me.getValue(mp.get(mapa, "sccid")),
+            "SCC size": me.getValue(mp.get(mapa, "sccsize")), 
+            "min-lat": me.getValue(mp.get(mapa, "min-lat")),
+            "max-lat": me.getValue(mp.get(mapa, "max-lat")),
+            "min-lon": me.getValue(mp.get(mapa, "min-lon")),
+            "max-lon": me.getValue(mp.get(mapa, "max-lon")),
+            "LP Node Count": me.getValue(mp.get(mapa, "nodes")),
+            "LP Edges Count": me.getValue(mp.get(mapa, "edges")),
+            "LP distance [km]": me.getValue(mp.get(mapa, "distance")),
+            "Dips Disp details": me.getValue(mp.get(mapa, "nodesid"))
+            
+        }
+        lista.append(dicc)
+        
+    return lista
 def print_req_8(control):
     """
         Función que imprime la solución del Requerimiento 8 en consola

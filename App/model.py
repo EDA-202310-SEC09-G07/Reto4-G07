@@ -529,6 +529,7 @@ def datos_kosaraju(control,idscc,IDkeys):
         idscc: tabla con las idscc generadas por el alogritmo de kosaraju
         IDkeys: La llaves de la tabla idscc
     """
+    print(IDkeys)
     infoManadas = mp.newMap(maptype="PROBING")
     for IDkey in lt.iterator(IDkeys):
         manada = mp.get(idscc,IDkey)
@@ -964,12 +965,135 @@ def req_7(control, inc, fin, tem_min, tem_max):
     grafo= crear_grafo_manadas(lista_eventos)
 
     #se ejecuta kosaraju y se organizan los datos
-    KosarajuData = scc.KosarajuSCC(grafo) 
-    idscc = KosarajuData['idscc']
-    IDkeys = mp.keySet(idscc)
-    respuesta= datos_kosaraju(control,idscc,KosarajuData)
-    return respuesta
+    search= scc.KosarajuSCC(grafo)
+    mapa_idscc= search["idscc"] #mapa que tiene como llaves los nodos del grafo, y como valor el sccid
+    keys= mp.keySet(mapa_idscc)
+    #crea un mapa cuyas llaves son los sccid y los valores son una lista con todos los puntos de ese id
+    mapa_scc=mp.newMap(200,
+                                        maptype='PROBING',
+                                        loadfactor=0.5,
+                                        cmpfunction=compare_map)
+    lista_puntos=lista_eventos=lt.newList(datastructure="ARRAY_LIST")
+    for punto in lt.iterator(keys):
+        entry=mp.get(mapa_idscc, punto)
+        sccid= me.getValue(entry)
+        if mp.contains(mapa_scc, sccid):
+            entry= mp.get(mapa_scc, sccid)
+            lista= me.getValue(entry)
+            lt.addLast(lista, punto)
+            mp.put(mapa_scc, sccid, lista)
+            
+        else:
+            lista_puntos=lista_eventos=lt.newList(datastructure="ARRAY_LIST")
+            lt.addLast(lista_puntos, punto)
+            mp.put(mapa_scc, sccid, lista_puntos)
+            
+    lista_final=lt.newList(datastructure="ARRAY_LIST")
+    mapa=mp.newMap(200,
+                                        maptype='PROBING',
+                                        loadfactor=0.5,
+                                        cmpfunction=compare_map)
     
+    keys= mp.keySet(mapa_scc)
+    
+    for iden in lt.iterator(keys):
+        mapa=mp.newMap(20,
+                                        maptype='PROBING',
+                                        loadfactor=0.5,
+                                        cmpfunction=compare_map)
+        lista= mp.get(mapa_scc, iden)
+        lista= me.getValue(lista)
+        mp.put(mapa, "sccid", iden)
+        mp.put(mapa, "sccsize", lt.size(lista))
+        mp.put(mapa, "valores", lista)
+        lt.addLast(lista_final, mapa)
+        
+    lista_final=sort(lista_final, 5)
+    
+    lista_final= tres_prim_ult(lista_final)
+    lista_final2=lt.newList(datastructure="ARRAY_LIST")
+    for mapa in lt.iterator(lista_final):
+        lista= mp.get(mapa, "valores")
+        lista= me.getValue(lista)
+        lista=sort(lista, 2)
+        minlon, maxlon= obtener_max_min_lon(lista)
+        mp.put(mapa, "max-lon", maxlon)
+        mp.put(mapa, "min-lon", minlon)
+        num_wolf, wolfs= obtener_num_lobos(control["wolfs"], lista)
+        mp.put(mapa, "wolfdetails", wolfs)
+        mp.put(mapa, "wolfcount", num_wolf)
+        arcos, vertices, distancia= crear_arcos_vertices_distancia(grafo, lista)
+        mp.put(mapa, "nodes", vertices)
+        mp.put(mapa, "edges", arcos)
+        mp.put(mapa, "distance", distancia)
+        minlat, maxlat= obtener_max_min_lat(lista)
+        mp.put(mapa, "max-lat", maxlat)
+        mp.put(mapa, "min-lat", minlat)
+        puntos= crear_str_puntos(lista)
+        mp.put(mapa, "nodesid", puntos)
+        lt.addLast(lista_final2, mapa)
+    
+    return gr.numVertices(grafo), gr.numEdges(grafo), scc.connectedComponents(search), lista_final2
+    
+
+def crear_str_puntos(lista):
+    txt=""
+    size=lt.size(lista)
+    if size>1:
+        for punto in lt.iterator(lista):
+            txt= txt+","+ punto
+        txt= txt.strip(",")
+
+    return txt
+
+        
+def obtener_max_min_lon(lista):
+    first= lt.firstElement(lista)
+    last=lt.lastElement(lista)
+    iden1, lon1, lat1= obtener_identificador_lon_lat(first)
+    iden2, lon2, lat2= obtener_identificador_lon_lat(last)
+    lon1, lat1= convertir_lon_lat(lon1, lat1)
+    lon2, lat2= convertir_lon_lat(lon2, lat2)
+    
+    return lon1, lon2
+
+def obtener_max_min_lat(lista):
+    lista=sort(lista, 3)
+    first= lt.firstElement(lista)
+    last=lt.lastElement(lista)
+    iden1, lon1, lat1= obtener_identificador_lon_lat(first)
+    iden2, lon2, lat2= obtener_identificador_lon_lat(last)
+    lon1, lat1= convertir_lon_lat(lon1, lat1)
+    lon2, lat2= convertir_lon_lat(lon2, lat2)
+    
+    return lat1, lat2
+
+def obtener_num_lobos(mapa_wolfs, lista):
+    lista_lobos=lt.newList(datastructure="ARRAY_LIST", cmpfunction=compare_lista)
+    num_wolfs=0
+    for punto in lt.iterator(lista):
+        iden, lon, lat= obtener_identificador_lon_lat(punto)
+        if iden != 0:
+            entry= mp.get(mapa_wolfs, iden)
+            wolf= me.getValue(entry)
+            if lt.isPresent(lista_lobos, wolf)==0:
+                num_wolfs+=1
+                lt.addLast(lista_lobos, wolf)
+                
+    return num_wolfs, lista_lobos
+
+def crear_arcos_vertices_distancia(grafo, lista):
+    first= lt.firstElement(lista)
+    last=lt.lastElement(lista)
+    search=djk.Dijkstra(grafo, first)
+    distancia= djk.distTo(search, last)
+    path= djk.pathTo(search, last)
+    vertices= st.size(path)
+    arcos= vertices-1
+    
+    return arcos, vertices, distancia
+
+
     
     
     
@@ -1113,6 +1237,8 @@ def sort(data_structs, num):
         data_structs= merg.sort(data_structs, sort_latitud)
     elif num == 4:
         data_structs= merg.sort(data_structs, sort_fecha)
+    elif num == 5:
+        data_structs= merg.sort(data_structs, sort_req_7)
     return data_structs
 
 
@@ -1137,7 +1263,21 @@ def sort_lon_lat(data1,data2):
         
     return data1< data2
 
-
+def sort_req_7(data1, data2):
+    size1= mp.get(data1, "sccsize")
+    size1= me.getValue(size1)
+    size2= mp.get(data2, "sccsize")
+    size2= me.getValue(size2)
+    if size1> size2:
+        return True
+    elif size1== size2:
+        id1= mp.get(data1, "sccid")
+        id1= me.getValue(id1)
+        id2= mp.get(data2, "sccid")
+        id2= me.getValue(id2)
+        return id1<id2
+    else:
+        return False
     
 def sort_latitud(data1,data2):
     iden, lon1, lat1 = obtener_identificador_lon_lat(data1)
@@ -1148,6 +1288,16 @@ def compare_arbol_caso(data_1, data_2):
     if data_1 > data_2:
         return 1
     elif data_1 < data_2:
+        return -1
+    else:
+        return 0
+
+def compare_lista(data_1, data_2):
+    iden1= data_1["animal-id"]+"_"+data_1["tag-id"]
+    iden2= data_2["animal-id"]+"_"+data_2["tag-id"]
+    if iden1 > iden2:
+        return 1
+    elif iden1 < iden2:
         return -1
     else:
         return 0
