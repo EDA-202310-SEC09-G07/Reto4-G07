@@ -248,16 +248,21 @@ def print_req_3(control):
         Función que imprime la solución del Requerimiento 3 en consola
     """
     # TODO: Imprimir el resultado del requerimiento 3
-    print("calculando los territorios de los lobos con componentes fuertemente conectados")
+    print("================ Req No. 3 =================\n\n")
+    print("calculando los territorios de los lobos con componentes fuertemente conectados\n\n")
+    
     sccs, lista_final= controller.req_3(control)
+    
+    print("============== Req No. 3 Answer ============\n\n")
+    print("Wolf pack territory details according to SCC....")
+    print("there are ",str(sccs)," Strongly Connected components (SCC) in the graph\n")
+    print("++ The SCC details are: +++")
+    print("the TOP 5 SCC in the graph are: ")
     lista1= crear_lista_req_7(lista_final)
     header = lista1[0].keys()
     rows =  [x.values() for x in lista1]
-    print(tabulate.tabulate(rows,header,tablefmt="grid",maxcolwidths= [8,8,8,8,8,8,8,8,23]))
-    #lista_eventos= crear_lista_req4(valor)
-    #header = lista_eventos[0].keys()
-    #rows =  [x.values() for x in lista_eventos]
-    #print(tabulate.tabulate(rows,header,tablefmt="grid",maxcolwidths= 10,maxheadercolwidths=6))
+    print(tabulate.tabulate(rows,header,tablefmt="grid",maxcolwidths= [5]))
+    
 
 
 def print_req_4(control):
@@ -465,12 +470,23 @@ def print_req_7(control):
         Función que imprime la solución del Requerimiento 7 en consola
     """
     # TODO: Imprimir el resultado del requerimiento 7
+    print("============= Req No. 7 Inputs =================\n")
     inc= input("Ingrese la fecha inicial: ")
     fin= input("Ingrese la fecha final: ")
     tep_min= input("Ingrese la temperatura mínima: ")
     tep_max= input("Ingrese la temperatura máxima: ")
+    print("======== Creando un nuevo grafo =================\n")
+    print("++ Detalles dinales del grafo dirigido ++")
     vertices, arcos, sccs, lista_final= controller.req_7(control, inc, fin, tep_min, tep_max)
-    size= [11,11,11,11,11,11,None,None]
+    print("     -  -Digraph Nodes: ", vertices)
+    print("     -  -Digraph Nodes: ", arcos)
+    
+    print("============== Req No. 7 Answer ============\n\n")
+    print("Wolf pack territory details according to SCC....")
+    print("there are ",str(sccs)," Strongly Connected components (SCC) in the graph\n")
+    print("++ The SCC details are: +++")
+    print("los 3 primeros, y 3 ultimos en el rango son: ")
+    size= [5]
     lista1= crear_lista_req_7(lista_final)
     header = lista1[0].keys()
     rows =  [x.values() for x in lista1]
@@ -486,7 +502,7 @@ def crear_lista_req_7(lista_final):
     for mapa in lt.iterator(lista_final):
         dicc={
             "SCCID": me.getValue(mp.get(mapa, "sccid")),
-            "Dips Node IDs": me.getValue(mp.get(mapa, "nodesid")),
+            "Dips Node IDs": me.getValue(mp.get(mapa, "nodesid")).replace(",", ",\n"),
             "SCC size": me.getValue(mp.get(mapa, "sccsize")), 
             "min-lat": me.getValue(mp.get(mapa, "min-lat")),
             "max-lat": me.getValue(mp.get(mapa, "max-lat")),
@@ -514,7 +530,7 @@ def crear_tabla_lobos_req_7(wolfs):
         lista.append(dicc)
     header = lista[0].keys()
     rows =  [x.values() for x in lista]
-    tabla= tabulate.tabulate(rows,header,tablefmt="grid",maxcolwidths= 10,maxheadercolwidths=6)
+    tabla= tabulate.tabulate(rows,header,tablefmt="grid",maxcolwidths= [15,15,15,15,40])
     return tabla
 
 
@@ -531,7 +547,7 @@ def crear_lista_req_7_2(lista_final):
             "LP Node Count": me.getValue(mp.get(mapa, "nodes")),
             "LP Edges Count": me.getValue(mp.get(mapa, "edges")),
             "LP distance [km]": me.getValue(mp.get(mapa, "distance")),
-            "Dips Disp details": me.getValue(mp.get(mapa, "nodesid"))
+            "Dips Disp details": me.getValue(mp.get(mapa, "nodesid")).replace(",", ",\n")
             
         }
         lista.append(dicc)

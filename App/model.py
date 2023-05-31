@@ -319,6 +319,19 @@ def cinco_prim_ult(data_structs):
         
         
         return data_structs2
+
+def cinco_prim(data_structs):    
+    if lt.size(data_structs)<=5:
+        return data_structs
+    else:
+        data_structs2=lt.newList(datastructure="ARRAY_LIST")
+        lt.addLast(data_structs2, lt.firstElement(data_structs))
+        lt.addLast(data_structs2, lt.getElement(data_structs, 2))
+        lt.addLast(data_structs2, lt.getElement(data_structs, 3))
+        lt.addLast(data_structs2, lt.getElement(data_structs, 4))
+        lt.addLast(data_structs2, lt.getElement(data_structs, 5))
+        
+        return data_structs2
     
 def tres_prim_ult(data_structs):    
     if lt.size(data_structs)<=6:
@@ -571,7 +584,7 @@ def req_3(control):
         
     lista_final=sort(lista_final, 5)
     
-    lista_final= tres_prim_ult(lista_final)
+    lista_final= cinco_prim(lista_final)
     lista_final2=lt.newList(datastructure="ARRAY_LIST")
     for mapa in lt.iterator(lista_final):
         lista= mp.get(mapa, "valores")
@@ -589,6 +602,19 @@ def req_3(control):
         puntos= crear_str_puntos(lista)
         mp.put(mapa, "nodesid", puntos)
         lt.addLast(lista_final2, mapa)
+        
+    # Lista Req 8
+    values_puntos = mp.valueSet(mapa_scc)
+    values_puntos =me.getValue(values_puntos)
+    lista_final=[]
+    for lista in lt.iterator(values_puntos):
+        lista=[]
+        for punto in lt.iterator(lista):
+            lista.append(punto)
+            
+        lista_final.append(lista)
+        
+    
     
     return scc.connectedComponents(KosarajuData), lista_final2
         
