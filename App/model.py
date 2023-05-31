@@ -127,9 +127,9 @@ def load_moves(control, lista_eventos):
     for evento in lt.iterator(lista_eventos):
         punto = crear_identificador(evento)
         individual_id = evento["individual-local-identifier"] + "_" + evento["tag-local-identifier"]
-        
-        gr.insertVertex(grafo, punto)
-        mp.put(mapa, punto, evento)
+        if not gr.containsVertex(grafo, punto):
+            gr.insertVertex(grafo, punto)
+            mp.put(mapa, punto, evento)
         
         if anterior is not None and individual_id == anterior["individual-local-identifier"] + "_" + anterior["tag-local-identifier"]:
             punto_ant = crear_identificador(anterior)
@@ -526,7 +526,7 @@ def req_3(control):
     KosarajuData = scc.KosarajuSCC(control['moves']) 
     idscc = KosarajuData['idscc']
     IDkeys = mp.keySet(idscc)
-    respuesta= datos_kosaraju(control,idscc,IDkeys)
+    respuesta= datos_kosaraju(control,idscc,KosarajuData)
     return respuesta
   
     
@@ -540,7 +540,7 @@ def datos_kosaraju(control,idscc,IDkeys):
     """
     infoManadas = mp.newMap(maptype="PROBING")
     for IDkey in lt.iterator(IDkeys):
-        manada = mp.get(idscc,IDkey)['value']
+        manada = mp.get(idscc,IDkey)
         lon= getLongitud(IDkey)
         lat= getLatitud(IDkey)
         
@@ -569,7 +569,7 @@ def datos_kosaraju(control,idscc,IDkeys):
     
     return infoManadas
         
-    
+
 
 def req_4(data, ori_lon, ori_lat, des_lon, des_lat):
     """
@@ -582,6 +582,7 @@ def req_4(data, ori_lon, ori_lat, des_lon, des_lat):
     lobos = lt.newList(datastructure="ARRAY_LIST")
     lista_mapa = lt.newList(datastructure="ARRAY_LIST")
     lista_enc = lt.newList(datastructure="ARRAY_LIST")
+    mapa_postions = data["positions"]
     positions = data["encuentros"]
     lista_positions= mp.keySet(positions)
     p1 = lt.firstElement(lista_positions)
@@ -685,11 +686,12 @@ def req_5(data_structs, puntos, kil, inc):
     mapa_postions= data_structs["positions"]
     lista_positions= mp.keySet(mapa_postions)
     kil= (float(kil)/2)
-    recorridos= djk.Dijkstra(grafo, inc)
+    recorridos= bf.BellmanFord(grafo, inc)
     encuentros=om.newMap("BST",
                       compare_arbol_caso)
     for encuentro in lt.iterator(lista_positions):
-        costo=djk.distTo(recorridos, encuentro)
+        
+        costo=bf.distTo(recorridos, encuentro)
         if costo<= kil:
             om.put(encuentros, costo, encuentro)
             
@@ -698,19 +700,16 @@ def req_5(data_structs, puntos, kil, inc):
         valor= obtener_recorrido_max(recorridos, encuentros, puntos)
         if valor!= False:
             recorrido_mayor, distancia, min_pun= valor
-            lista_mapa = lt.newList(datastructure="ARRAY_LIST")
             lista_vertices=lt.newList(datastructure="ARRAY_LIST")
             lista_animales=lt.newList(datastructure="ARRAY_LIST")
             size= st.size(recorrido_mayor)
-            a = True
             while not st.isEmpty(recorrido_mayor):
-                vertex_tot = st.pop(recorrido_mayor)
-                vertex= vertex_tot["vertexA"]
+                vertex = st.pop(recorrido_mayor)
+                vertex= vertex["vertexA"]
                 lt.addLast(lista_vertices, vertex)
-                if a:
-                    lt.addLast(lista_mapa, vertex_tot["vertexB"])
-                    a = not a
-                lt.addLast(lista_mapa, vertex)
+            
+            
+         
             lista_vertices= sort(lista_vertices, 2)
             lista_ver_2= lista_vertices
             for vertex in lt.iterator(lista_ver_2):
@@ -721,20 +720,6 @@ def req_5(data_structs, puntos, kil, inc):
                     animals=1
                 lt.addLast(lista_animales, animals)
             respuesta= size, distancia, lista_vertices, lista_animales
-            if True: 
-                print(lista_mapa)
-                iterator = lt.iterator(lista_mapa)
-                _, ln_i, lt_i = obtener_identificador_lon_lat(lt.firstElement(lista_mapa))
-                ln_i, lt_i = convertir_lon_lat(ln_i, lt_i)
-                m = folium.Map(location=[lt_i, ln_i], zoom_start=12)
-                trail = []
-                for i in iterator:
-                    _, i_ln, i_lt = obtener_identificador_lon_lat(i)
-                    i_ln, i_lt = convertir_lon_lat(i_ln, i_lt)
-                    trail.append([i_lt, i_ln])
-                folium.PolyLine(trail).add_to(m)
-                output_file = "req5.html"
-                m.save(output_file)
             return rutas, min_pun, distancia*2, respuesta
         
     else: 
@@ -748,7 +733,7 @@ def obtener_recorrido_max(recorridos, mapa, valor):
         distancia_max= om.maxKey(mapa)
         entry= om.get(mapa, distancia_max)
         value= me.getValue(entry)
-        path= djk.pathTo(recorridos, value)
+        path= bf.pathTo(recorridos, value)
         puntos= st.size(path)
         if puntos>= int(valor):
             return path, distancia_max, puntos
@@ -981,7 +966,6 @@ def crear_grafo_manadas(lista):
                                       size=300000,
                                       cmpfunction=compareStopIds)
     search= scc.KosarajuSCC(grafo)
-    print(search)
     anterior = None
 
     for evento in lt.iterator(lista):
@@ -1043,21 +1027,20 @@ def req_8(data_structs):
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 
-def infoManada(control, info, nodeIds, wolfDetails, min_lat, max_lat, min_lon, max_lon,ID, Wolfs):
+def infoManada(control, info, nodeIds, wolfDetails, min_lat, max_lat, min_long, max_long, point, Wolfs):
     """"
     Actualiza los campos de información de una manada
     """
-    lt.addLast(nodeIds, ID)
+    lt.addLast(nodeIds, point)
     mp.put(info, "Nodes Ids", nodeIds)
     mp.put(info, "SCC Size", lt.size(nodeIds))
     mp.put(info, "min-lat", min_lat)
     mp.put(info, "max-lat", max_lat)
-    mp.put(info, "min-long", min_lon)
-    mp.put(info, "max-long", max_lon)
-    if (mp.contains(control['positions'], ID)):
-        lista_positions= mp.keySet(control["positions"])
-        p1 = lt.firstElement(lista_positions)
-        individualId, _, _ = obtener_identificador_lon_lat(p1)
+    mp.put(info, "min-long", min_long)
+    mp.put(info, "max-long", max_long)
+    if (mp.contains(control['locations'], point)):
+        individualId = mp.get(control['locations'], point)['value']
+        individualId = individualId['individual-id']
         if (mp.contains(control["wolfs"], individualId)) and (not lt.isPresent(Wolfs, individualId)):
             lt.addLast(wolfDetails, getWolfsDetails(control, individualId)) 
             lt.addLast(Wolfs, individualId)
