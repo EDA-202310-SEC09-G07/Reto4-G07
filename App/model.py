@@ -811,14 +811,17 @@ def obtener_recorrido_max(recorridos, mapa, valor):
         entry= om.get(mapa, distancia_max)
         value= me.getValue(entry)
         path= bf.pathTo(recorridos, value)
-        puntos= st.size(path)
-        if puntos>= int(valor):
-            return path, distancia_max, puntos
-        else:
+        if path != None:
+            puntos= st.size(path)
+            if puntos>= int(valor):
+                return path, distancia_max, puntos
+            else:
+                om.deleteMax(mapa)
+        else: 
             om.deleteMax(mapa)
         lt.removeLast(lista)
     return False
-            
+    
     
 
 def req_6(control, inc, fin, gen):
